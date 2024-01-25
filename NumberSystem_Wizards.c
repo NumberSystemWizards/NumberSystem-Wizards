@@ -528,9 +528,10 @@ int main(){
                                                                         inputToDecimalConvered);
                 break;
         }
-        COLOR_BLUE
+        COLOR_YELLOW
         printf( "\n<------------------------------------------------------>\n"
                 "<------------------------------------------------------>\n\n");
+        COLOR_BLUE
         printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n"); COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
         COLOR_RESET
         response = getCharResponse(); 
