@@ -29,8 +29,8 @@ This C program is a number system converter that allows users to convert between
 - **No Support for Negative Numbers:**
   - The program does not support negative numbers. It assumes that all input and output numbers are non-negative.
 
-- **No Support for floating points conversions:**
-  - The program only support converting whole numbers. Any floating numbers will be discarded.
+- **No Support for fraction conversions:**
+  - The program only support converting whole numbers. Any fraction numbers will be discarded.
 
 - **Input Limitations Due to Long Long Limitation:**
   - The use of the `long long` data type imposes limitations on the size of the input numbers. Extremely large numbers may not be handled accurately.
