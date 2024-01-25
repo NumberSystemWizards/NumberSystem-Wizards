@@ -9,7 +9,7 @@
 
 // Macros to reset &change text colors: (instead or writing it multiple times)
   // Initiate handle for console, must be in every function uses color changing feature.
-  #define COLOR_INIT      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  #define COLOR_INIT      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // Get the output console handle to change color 
 #define COLOR_RESET     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_BLUE);
 #define COLOR_RED       SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 #define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
@@ -53,14 +53,11 @@ void initWelcomeScreen(){
     "               ******               ******\n"
     "                    *****************\n\n");
 
-
     COLOR_RESET
     printf("OH! It is a pleasure to see you :D\nMay I know your name? -> : ");
-
-    //Taking the user name from the user.
-    //scanf("%s",&userName);
-    gets(userName);
+    gets(userName); //Taking the user name from the user.
     COLOR_YELLOW
+
     //Printing a line depending on the username length to fit the messege.
     printf("\n\n<");
     for(int i=0;i<50+strlen(userName);i++){
@@ -83,7 +80,7 @@ void initWelcomeScreen(){
     COLOR_RESET
 }
 
-/*A function to print the options list.*/
+// A function to print the options list.
 void conversionList(){
     COLOR_INIT
     COLOR_YELLOW
@@ -100,13 +97,13 @@ void conversionList(){
 }
 
 
-/* Removes unwanted characters from the input stream, return the number of flushed characters */
+// Removes unwanted characters from the input stream, return the number of flushed characters
 int flushBufferReturnCounter(){
     char dummyChar; // Create a dummy character to consume the buffer 
     int numOfCharactersConsumed=0; // Count how many characters consumed
     // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
     while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
-        if (dummyChar != ' ') numOfCharactersConsumed++; 
+        if (dummyChar != ' ') numOfCharactersConsumed++; // Ignore spaces only 
     }
     return numOfCharactersConsumed;
 }
@@ -142,8 +139,7 @@ bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlus
 /*Check the validity of the entered Hex number
     * first it checks if the character is digit, if not, it checks if it's {a,b,c,d,e,f}.
     * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
-    * and 1 indecates the input is not valid and continue the while loop and get the input again.
-    * */
+    * and 1 indecates the input is not valid and continue the while loop and get the input again.*/
 bool checkHexSystem(char *hexArray, int numOfFlushes){
     COLOR_INIT
     int maxDigits = maxInputPerSystem[4];
@@ -160,7 +156,8 @@ bool checkHexSystem(char *hexArray, int numOfFlushes){
         if (!(isdigit(currentChar))){
             if (currentChar > 'F' || currentChar < 'A'){
                 COLOR_RED
-                printf("\aPlease enter a valid Hexadecimal number. Hex digits ranged from [1 - 9] and [A - F] inclusive. Decimal points are not supported!\n");
+                printf("\aPlease enter a valid Hexadecimal number. Hex digits ranged from [1 - 9]"
+                    "and [A - F] inclusive. Decimal points are not supported!\n");
                 COLOR_RESET
                 return true;
             }
@@ -172,9 +169,8 @@ bool checkHexSystem(char *hexArray, int numOfFlushes){
 
 /*Check the validity of the entered binary, octal, decimal number
     * the reason for the seperate function is than hex's input is a string where other system's is long int
-    * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
-    * and 1 indecates the input is not valid and continue the while loop and get the input again 
-    * */
+    * returns a boolean expression (0,1), where 0 indicates the input is valid and terminate the while loop
+    * and 1 indecates the input is not valid and continue the while loop and get the input again */
 bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes, int numOfScannedVariables, int chosenSystem){
     COLOR_INIT
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
@@ -186,7 +182,7 @@ bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes,
     }
 
     int maxDigits = maxInputPerSystem[chosenSystem];
-    int digitsCount = 0; // A container to count the number of digits
+    int digitsCount = 0; // A variable to store the number of digits in
 
     if (inputNumber == 0) digitsCount = 1;
     else digitsCount = log10(inputNumber) + 1; // A formula to get the number of digits in a variable
@@ -199,29 +195,28 @@ bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes,
         return true;
     }
 
-    int lastDigit = 0; // The last digit in the number
-    unsigned long long int tempInputSystem = inputNumber; // A temporary variable to check all of its digits
+    int lastDigit = 0; // A variable to store the last digit in the input number
     switch (chosenSystem)
     {
         // Make appropriate validations with for each input system
         case 1: // Binary input
-            while(tempInputSystem != 0){
-                lastDigit = tempInputSystem % 10; // Get the last digit
+            while(inputNumber != 0){
+                lastDigit = inputNumber % 10; // Get the last digit
                 if (lastDigit > 1){
-                    // Not a valid binary number
+                    // Not a valid binary number if it's not 1 or 0
                     COLOR_RED
                     printf("\aPlease enter a valid binary number, consists only of 1's and 0's!\n");
                     COLOR_RESET
                     return true;
                 }
-                tempInputSystem /= 10;
+                inputNumber /= 10;
             }
             return false; // If it's out of the while loop without getting any errors, then the nubmer is valid
             break;
 
         case 2:
-            while(tempInputSystem != 0){
-                lastDigit = tempInputSystem % 10;
+            while(inputNumber != 0){
+                lastDigit = inputNumber % 10;
                 if (lastDigit > 7){
                     // Not a valid octal number
                     COLOR_RED
@@ -229,22 +224,17 @@ bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes,
                     COLOR_RESET
                     return true;
                 }
-                tempInputSystem /= 10;
+                inputNumber /= 10;
             }
             return false; // If it's out of the while loop without getting any errors, then the nubmer is valid
             break;
-
-        case 3: 
-            // We are sure that if the user entered a number and it passed the length, number of scanned variables, and buffer test,
-                // then it's a decimal number for sure!
-            return false;
-            break;
     }
-    return false;
+    return false; // If the Number is decimal and it passed the 2 conditions 
+                    //before the switch statement, then it's a valid decimal number
 }
 
 
-/** Converting decimal to binary.
+/* Converting decimal to binary.
  * Accepts a long long decimal representation &
      a pointer to the binary array in the main to be modified.
     * The function doesn't return anything.*/
