@@ -104,7 +104,9 @@ int flushBufferReturnCounter(){
     char dummyChar; // Create a dummy character to consume the buffer 
     int numOfCharactersConsumed=0; // Count how many characters consumed
     // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
-    while((dummyChar = getchar()) != '\n' && dummyChar != EOF) numOfCharactersConsumed++; 
+    while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
+        if (dummyChar != ' ') numOfCharactersConsumed++; 
+    }
     return numOfCharactersConsumed;
 }
 
