@@ -13,7 +13,7 @@
 #define COLOR_RESET     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_BLUE);
 #define COLOR_RED       SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 #define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
 #define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
 #define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
 
@@ -160,7 +160,7 @@ bool checkHexSystem(char *hexArray, int numOfFlushes){
         if (!(isdigit(currentChar))){
             if (currentChar > 'F' || currentChar < 'A'){
                 COLOR_RED
-                printf("\aPlease enter a valid Hexadecimal number. Hex digits ranged from [1 - 9] and [A - F] inclusive.\n");
+                printf("\aPlease enter a valid Hexadecimal number. Hex digits ranged from [1 - 9] and [A - F] inclusive. Decimal points are not supported!\n");
                 COLOR_RESET
                 return true;
             }
@@ -180,7 +180,7 @@ bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes,
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
         // If the user entered a string or any other datatype except the intended
         COLOR_RED
-        printf("\aPlease enter a valid %s number!\n", systemIndexes[chosenSystem]);
+        printf("\aPlease enter a valid %s number. Decimal points are not supported!\n", systemIndexes[chosenSystem]);
         COLOR_RESET
         return true;
     }
