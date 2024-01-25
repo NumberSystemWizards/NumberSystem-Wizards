@@ -21,6 +21,7 @@
 char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"}; 
 int maxInputPerSystem[5] = {0, 18, 17, 8, 7}; // Restrict the maximum length of user input to avoid over flow.
 
+// A function to welcome the user with a smiley face and print it's name
 void initWelcomeScreen(){
     COLOR_INIT
     char userName[100];
@@ -81,25 +82,25 @@ void initWelcomeScreen(){
     COLOR_RESET
 }
 
+/*A function to print the options list.*/
 void conversionList(){
-    /*A function to print the options list.*/
     COLOR_INIT
     COLOR_YELLOW
     printf("\t\t--> Conversion Types List <--\n\n");
     COLOR_RESET
-    printf(" 1- Binary Conversion.\n"
-    " 2- Octal Conversion.\n"
-    " 3- Decimal Conversion.\n"
-    " 4- Hexadecimal Conversion.\n"
+    printf(" 1- Binary Conversions.\n"
+    " 2- Octal Conversions.\n"
+    " 3- Decimal Conversions.\n"
+    " 4- Hexadecimal Conversions.\n"
     " 5- Exit the program.\n");
     COLOR_BLUE
-    printf("\n\tPlease select the required system from the previous list\n");
+    printf("\n\tPlease select the required system from the previous list\n"); COLOR_YELLOW printf("Enter here:  ");
     COLOR_RESET
 }
 
 
+/* Removes unwanted characters from the input stream, return the number of flushed characters */
 int flushBufferReturnCounter(){
-    /* Removes unwanted characters from the input stream, return the number of flushed characters */
     char dummyChar; // Create a dummy character to consume the buffer 
     int numOfCharactersConsumed=0; // Count how many characters consumed
     // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
@@ -108,13 +109,13 @@ int flushBufferReturnCounter(){
 }
 
 
+/*Check if 
+    * 1- The System index the user chose is actually valid i.e from [1 - 4]
+    * 2- If the user unintentionally entered a character, string, float, or any other type
+    * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
+    * 1 indecates the input is not valid and continue the while loop and get the input again
+    */
 bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
-    /*Check if 
-     * 1- The System index the user chose is actually valid i.e from [1 - 4]
-     * 2- If the user unintentionally entered a character, string, float, or any other type
-     * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
-     * 1 indecates the input is not valid and continue the while loop and get the input again
-     */
 
     COLOR_INIT
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
@@ -134,12 +135,13 @@ bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlus
     return false;
 }
 
+
+/*Check the validity of the entered Hex number
+    * first it checks if the character is digit, if not, it checks if it's {a,b,c,d,e,f}.
+    * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
+    * and 1 indecates the input is not valid and continue the while loop and get the input again.
+    * */
 bool checkHexSystem(char *hexArray, int numOfFlushes){
-    /*Check the validity of the entered Hex number
-     * first it checks if the character is digit, if not, it checks if it's {a,b,c,d,e,f}.
-     * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
-     * and 1 indecates the input is not valid and continue the while loop and get the input again.
-     * */
     COLOR_INIT
     int maxDigits = maxInputPerSystem[4];
     int arrayLength = strlen(hexArray);
@@ -164,12 +166,13 @@ bool checkHexSystem(char *hexArray, int numOfFlushes){
     return false;
 }
 
+
+/*Check the validity of the entered binary, octal, decimal number
+    * the reason for the seperate function is than hex's input is a string where other system's is long int
+    * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
+    * and 1 indecates the input is not valid and continue the while loop and get the input again 
+    * */
 bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes, int numOfScannedVariables, int chosenSystem){
-    /*Check the validity of the entered binary, octal, decimal number
-     * the reason for the seperate function is than hex's input is a string where other system's is long int
-     * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
-     * and 1 indecates the input is not valid and continue the while loop and get the input again 
-     * */
     COLOR_INIT
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
         // If the user entered a string or any other datatype except the intended
@@ -237,12 +240,12 @@ bool checkBinOctDecSystems(unsigned long long int inputNumber, int numOfFlushes,
     return false;
 }
 
-/*************************************Binary Conversions******************************************************/
+
+/** Converting decimal to binary.
+ * Accepts a long long decimal representation &
+     a pointer to the binary array in the main to be modified.
+    * The function doesn't return anything.*/
 void decimalToBinary(long long decimalNum, char *binaryNumReturn){
-    /** Converting decimal to binary.
-     * Accepts a long long decimal representation &
-       a pointer to the binary array in the main to be modified.
-     * The function doesn't return anything.*/
     long long index = 0, remainder = 0;
     do{
         remainder = decimalNum % 2;
@@ -253,10 +256,10 @@ void decimalToBinary(long long decimalNum, char *binaryNumReturn){
     // No need to return anything since we're modifying the array directly.
 }
 
+/* Converting binary to decimal
+    * Accepts a long long binary number (i.e consists only of 1 and 0)
+    * Returns a long long decimal*/
 long long binaryToDecimal(long long binaryNum){
-    /* Converting binary to decimal
-     * Accepts a long long binary number (i.e consists only of 1 and 0)
-     * Returns a long long decimal*/
     long long decimalNumReturn = 0, power = 0, remainder = 0, base = 0;
     do{
         remainder = binaryNum % 10;
@@ -269,12 +272,11 @@ long long binaryToDecimal(long long binaryNum){
     return decimalNumReturn;
 }
 
-/*************************************Octal Conversions******************************************************/
 
+/** Converting octal number to decimal.
+ * Accepts an octal number represented in long long.
+ * Returns a long long decimal number.*/
 long long octalToDecimal(long long octalNumber){
-    /** Converting octal number to decimal.
-     * Accepts an octal number represented in long long.
-     * Returns a long long decimal number.*/
     long long decimal = 0; // Decimal of type long long to avoid overflow
     int power = 0, // Power of 8 multipler
     reminder = 0; // Reminder and decimal equals zero to avoid garbage value
@@ -289,10 +291,10 @@ long long octalToDecimal(long long octalNumber){
     return decimal; // Return the final decimal result
 }
 
+/** Converting decimal number to octal.
+ * Accepts a decimal number represented in long long.
+ * Returns an octal number represented in long long.*/
 long long decimalToOctal(long long decimalNum){
-    /** Converting decimal number to octal.
-     * Accepts a decimal number represented in long long.
-     * Returns an octal number represented in long long.*/
     long long octalNumber = 0;
     int multiplier = 1, 
     reminder = 0;
@@ -307,13 +309,11 @@ long long decimalToOctal(long long decimalNum){
 }
 
 
-/*************************************Hex Conversions******************************************************/
-
+/**Converting hexdecimal to decimal.
+ * Accepts a pointer to the begging of the hexdecimal array.
+ * Retruns the decimal number represented in long long.
+*/
 long long hexDecimalToDecimal(char* hexDecimal){
-    /**Converting hexdecimal to decimal.
-     * Accepts a pointer to the begging of the hexdecimal array.
-     * Retruns the decimal number represented in long long.
-    */
 
     // Getting the length of the string.
     long long len = strlen(hexDecimal);
@@ -344,13 +344,12 @@ long long hexDecimalToDecimal(char* hexDecimal){
 }
 
 
-
+/** Converting decimal to hexdecimal.
+ * Accepts the decimal number to be converted & 
+    a pointer to the hexdecimal array in the main function to be modified. 
+    * The function doesn't return anything.
+*/
 void decimalToHexDecimal(long long decimal, char *hexDecimal){
-    /** Converting decimal to hexdecimal.
-     * Accepts the decimal number to be converted & 
-        a pointer to the hexdecimal array in the main function to be modified. 
-     * The function doesn't return anything.
-    */
     long long rem, i = 0;
     do{
         char digit;
@@ -377,9 +376,9 @@ void decimalToHexDecimal(long long decimal, char *hexDecimal){
     } // By swapping, we have the right order.
 }
 
-//! *************************************************************** End of conversions *****************************************************************************/
+
+/*A function to print the closing screen.*/
 void displayClosingMessage() {
-    /*A function to print the closing screen.*/
     COLOR_INIT
     COLOR_GREEN
     printf("\n\t\tMade By: ^NumberSystem Wizards^\n\n"
@@ -394,20 +393,23 @@ void displayClosingMessage() {
     COLOR_RESET
 }
 
+
+// Check the response of the user to enter (y,n). Case doesn't matter
 bool checkResponse(int numOfFlushes, char response){
     COLOR_INIT // Initiate the color changing 
     if (((response != 'y' && response != 'Y') && (response != 'n' && response != 'N')) || numOfFlushes != 0){
         COLOR_RED
-        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n");
+        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
         COLOR_RESET
         return true;
     }
     return false;
 }
 
+
+/*A function to check the input character from the user (y,n). 
+    Implemented here to free some space in main*/
 char getCharResponse(){
-    /*A function to check the input character from the user (y,n). 
-      Implemented here to free some space in main*/
     char response = 0; // To store the response of the user about leaving the program
     int numOfFlushes = 0;
     do {
@@ -417,8 +419,8 @@ char getCharResponse(){
     return response;
 }
 
+/*A function to determine whether to exit the program or to start again based on user choice*/
 bool tryAgain(char response){
-    /*A function to determine whether to exit the program or to start again based on user choice*/
     if (response == 'n' || response == 'N'){ 
         displayClosingMessage(); // If the user entered (N,n), Then display the message and exit the program.
         return false;
@@ -430,8 +432,6 @@ bool tryAgain(char response){
 }
 
 
-//! ******************************************** main ******************************************************************/
-//! ******************************************** main ******************************************************************/
 int main(){
 
     COLOR_INIT
@@ -463,22 +463,22 @@ int main(){
         }
 
         unsigned long long int inputNumber = 0;
-        printf("Please Enter, in one line, the number to be converted.\n");
-        COLOR_YELLOW
-        printf("\tThe %s number should not exceed %d digits!\n", systemIndexes[chosenSystem], maxInputPerSystem[chosenSystem]);
-        COLOR_RESET
+        COLOR_BLUE
+        printf("\nPlease Enter, in one line, the number to be converted.\n"); 
+        printf("\tThe %s number should not exceed ", systemIndexes[chosenSystem]); COLOR_RED printf("%d", maxInputPerSystem[chosenSystem]); COLOR_BLUE printf(" digits!\n");
         if (chosenSystem != 4){
             // 4 is the hex index in the systemIndexes array
             do{
+                COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
                 numOfScannedVariables = scanf("%llu", &inputNumber);
                 numOfFlushes = flushBufferReturnCounter();
             }while (checkBinOctDecSystems(inputNumber, numOfFlushes, numOfScannedVariables, chosenSystem));
         }
         char hexArray[maxInputPerSystem[4]]; // Arbitrary size, should not be exceeded! 
         int indx = 0; // Iterator used in for loops
-        // for (indx; indx<4; ++indx) hexArray[indx] = '\n'; // All are set to newline to handle leading zeros. //! delete
         if (chosenSystem == 4){
             do{
+                COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
                 scanf("%s", &hexArray);
                 numOfFlushes = flushBufferReturnCounter();
             }while(checkHexSystem(hexArray, numOfFlushes));
@@ -529,10 +529,10 @@ int main(){
                 break;
         }
         COLOR_BLUE
-        printf( "<------------------------------------------------------>\n"
-                "<------------------------------------------------------>\n");
+        printf( "\n<------------------------------------------------------>\n"
+                "<------------------------------------------------------>\n\n");
+        printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n"); COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
         COLOR_RESET
-        printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n");
         response = getCharResponse(); 
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
   return 0;
