@@ -15,7 +15,7 @@
 #define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 #define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
 #define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
-#define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
+#define COLOR_LIGHT_BLUE    SetConsoleTextAttribute(hConsole, 9);
 
 /*Global Decleration*/
 //Initialize the indexes of the system to be used in the code
@@ -71,7 +71,7 @@ void initWelcomeScreen(){
 
     //Printing the Welcome messege.
     printf("^ Welcome"); 
-    COLOR_PURPLE printf(" %s ", userName); COLOR_YELLOW
+    COLOR_LIGHT_BLUE printf(" %s ", userName); COLOR_YELLOW
     printf("To Our NumberSystem Converter Machine:) ^\n");
     printf("<");
 
