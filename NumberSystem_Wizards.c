@@ -6,6 +6,10 @@
 #include <ctype.h>
 #include <windows.h>
 
+
+
+
+
 // Macros to reset &change text colors: (instead or writing it multiple times)
   // Initiate handle for console, must be in every function uses color changing feature.
   #define COLOR_INIT      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
