@@ -478,7 +478,6 @@ int main(){
             }while (checkBinOctDecSystems(inputNumber, numOfFlushes, numOfScannedVariables, chosenSystem));
         }
         char hexArray[maxInputPerSystem[4]]; // Arbitrary size, should not be exceeded! 
-        int indx = 0; // Iterator used in for loops
         if (chosenSystem == 4){
             do{
                 COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
@@ -539,5 +538,6 @@ int main(){
         COLOR_RESET
         response = getCharResponse(); 
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
+    getchar(); // To make the program wait after displaying the closing message
   return 0;
 }
