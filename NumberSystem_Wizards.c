@@ -528,7 +528,7 @@ int main(){
                                                                         inputToDecimalConvered);
                 break;
         }
-        COLOR_YELLOW // Tst
+        COLOR_YELLOW
         printf( "\n<------------------------------------------------------>\n"
                 "<------------------------------------------------------>\n\n");
         COLOR_BLUE
