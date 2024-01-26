@@ -98,8 +98,6 @@ void conversionList(){
     " 5- Exit the program.\n");
     COLOR_BLUE
     printf("\n\tPlease select the required system from the previous list\n");
-    COLOR_YELLOW
-    printf("Enter here: ");
     COLOR_RESET
 }
 
