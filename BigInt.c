@@ -10,7 +10,7 @@
 #ifndef BOOL
 #define BOOL int8_t
 #endif
-
+ 
 typedef struct BigInt {
     unsigned char* digits; // Array of digits 0-9.  Greater indices hold more significant digits.
     unsigned int num_digits; // Number of digits actually in the number.
