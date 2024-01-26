@@ -80,13 +80,34 @@ void conversionList(){
 }
 
 
+// To get the chosen system from the list
+int getChosenSystem(){
+    COLOR_INIT
+    conversionList(); // Calling the conversion list only each time the program starts over
+        int chosenSystem = 0, 
+        //The actual system the user chose
+        numOfScannedVariables = 0, 
+        //The number of scanned variables 
+            //(return 0 if the above variable wasn't scanned)
+        numOfFlushes = 0; 
+        //Check if there was additional unintended input 
+            //(counts how many times a character has been removed from the input stream)
+        do{
+            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
+            numOfScannedVariables = scanf("%d", &chosenSystem);
+            numOfFlushes = flushBufferReturnCounter();
+        }while(validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes));
+        return chosenSystem;
+}
+
+
 /*Check if 
-    * 1- The System index the user chose is actually valid i.e from [1 - 4]
+    * 1- The system that the user chose is actually valid i.e from [1 - 4] or 5 to exit the program
     * 2- If the user unintentionally entered a character, string, float, or any other type
     * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
     * 1 indecates the input is not valid and continue the while loop and get the input again
     */
-bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
+bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
 
     COLOR_INIT
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
@@ -107,11 +128,65 @@ bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlus
 }
 
 
+// A function to scan, validate, convert, and print the converted number
+void getInputNumberAndConvert(int chosenSystem){
+    COLOR_INIT
+    int numOfFlushes;
+    COLOR_YELLOW
+        printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
+        COLOR_RESET
+        int sizeOfArrays = 512; //! Change in "scanf()" as well
+        char inputNumber[sizeOfArrays]; // Array to store user input
+        // Get user input and validate the input based on the system user chose
+        do{
+            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
+            scanf("%511s", &inputNumber);
+            numOfFlushes = flushBufferReturnCounter();
+        }while(validateInputNumber(inputNumber, numOfFlushes, chosenSystem));
+        
+        // Initialize containers for the result of the conversions
+        char binaryArray[sizeOfArrays];
+        char octalArray[sizeOfArrays];
+        char hexArrayU[sizeOfArrays];
+        char hexArrayL[sizeOfArrays];
+        int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
+        
+        BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
+        if (chosenSystem != 4){
+            decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
+            compareToZero = BigInt_compare_int(decimalInput, 0); 
+            // Result of comparing the user input by zero {to handle negatives}
+                // The BigInt_compare_int() returns 0 if both equal, 1 if the first is bigger 
+                    //(i.e positive) , and -1 if the latter is bigger (negative)
+        } 
+        else{
+            // We can't do the same thing with hexa as it contains non-digits character
+            if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
+            else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
+        }
+
+    switch(chosenSystem){
+        case 1:
+            binaryConversions(inputNumber, octalArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 2:
+            octalConversions(inputNumber, binaryArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 3:
+            decimalConversions(decimalInput, binaryArray, octalArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 4:
+            hexConversions(inputNumber, binaryArray, octalArray, compareToZero);
+            break;
+    }
+}
+
+
 /** Check The validity of the input number
  * Returns 0 in case of the validation is correct (to exit the do-while loop)
  * Returns 1 if the input is not valid
 */
-bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
+bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSystem){
     COLOR_INIT
 
     int arrayLength = strlen(inputNumberArray);
@@ -186,58 +261,9 @@ bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
 }
 
 
-// A function to scan, validate, convert, and print the converted number
-void getInputNumberAndConvert(int chosenSystem){
-    COLOR_INIT
-    int numOfFlushes;
-    COLOR_YELLOW
-        printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
-        COLOR_RESET
-        int sizeOfArrays = 512; //! Change in "scanf()" as well
-        char inputNumber[sizeOfArrays]; // Array to store user input
-        // Get user input and validate the input based on the system user chose
-        do{
-            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%511s", &inputNumber);
-            numOfFlushes = flushBufferReturnCounter();
-        }while(validateSystem(inputNumber, numOfFlushes, chosenSystem));
-        
-        // Initialize containers for the result of the conversions
-        char binaryArray[sizeOfArrays];
-        char octalArray[sizeOfArrays];
-        char hexArrayU[sizeOfArrays];
-        char hexArrayL[sizeOfArrays];
-        int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
-        
-        BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
-        if (chosenSystem != 4){
-            decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
-            compareToZero = BigInt_compare_int(decimalInput, 0); 
-            // Result of comparing the user input by zero {to handle negatives}
-                // The BigInt_compare_int() returns 0 if both equal, 1 if the first is bigger 
-                    //(i.e positive) , and -1 if the latter is bigger (negative)
-        } 
-        else{
-            // We can't do the same thing with hexa as it contains non-digits character
-            if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
-            else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
-        }
-
-    switch(chosenSystem){
-        case 1:
-            binaryConversions(inputNumber, octalArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 2:
-            octalConversions(inputNumber, binaryArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 3:
-            decimalConversions(decimalInput, binaryArray, octalArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 4:
-            hexConversions(inputNumber, binaryArray, octalArray, compareToZero);
-            break;
-    }
-}
+//============================================================================
+//! Math and conversion functions
+//============================================================================
 
 
 /**A function that raises a BigInt to a power (long long), by repeatedly multiplying the BigInt by itself.
@@ -274,7 +300,6 @@ BigInt* binaryToDecimal(char* binaryArray, int compareToZero){
     if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
 }
-
 
 
 /**A function to convert a BigInt decimal number to binary number
@@ -452,6 +477,11 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
 }
 
 
+//============================================================================
+//! Printing functions
+//============================================================================
+
+
 // To convert and print the conversions if the user entered a binary number
 void binaryConversions(char* inputNumber, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
     BigInt* decimalInput = binaryToDecimal(inputNumber, compareToZero);
@@ -489,6 +519,11 @@ void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int 
     printf("\n\nbin: %s\noct: %s\ndec: ", strrev(binaryArray), strrev(octalArray));
     BigInt_print(decimalInput);
 }
+
+
+//============================================================================
+//! Try again section
+//============================================================================
 
 
 
@@ -545,27 +580,6 @@ void displayClosingMessage() {
             printf("Closing Scene Stylist: ");              COLOR_RED printf("Yara Hossam\n\n"); COLOR_GREEN
             printf("\t\t\t Bye Bye!\n");
     COLOR_RESET
-}
-
-
-// To get and validate the chosen system from the user
-int getChosenSystem(){
-    COLOR_INIT
-    conversionList(); // Calling the conversion list only each time the program starts over
-        int chosenSystem = 0, 
-        //The actual system the user chose
-        numOfScannedVariables = 0, 
-        //The number of scanned variables 
-            //(return 0 if the above variable wasn't scanned)
-        numOfFlushes = 0; 
-        //Check if there was additional unintended input 
-            //(counts how many times a character has been removed from the input stream)
-        do{
-            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            numOfScannedVariables = scanf("%d", &chosenSystem);
-            numOfFlushes = flushBufferReturnCounter();
-        }while(checkSystemIndex(chosenSystem, numOfScannedVariables, numOfFlushes));
-        return chosenSystem;
 }
 
 
