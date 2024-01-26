@@ -1,28 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h> 
-#include <math.h>       // pow()
-#include <stdbool.h>    // bool data type
-#include <string.h>     // strlen(), strrev()
-#include <ctype.h>      // isdigit()
-#include <windows.h>    // To change text color in console
-
-#include "BigInt.c"     // BigInt Library
-
-
-// Macros to reset &change text colors: (instead or writing it multiple times)
-  // Initiate handle for console, must be in every function uses color changing feature.
-  #define COLOR_INIT      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-#define COLOR_RESET     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_BLUE);
-#define COLOR_RED       SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-#define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
-#define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
-#define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
-
-
-/*Global Decleration*/
-//Initialize the indexes of the system to be used in the code
-char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"}; 
+#include "NumberSystemWizards_v2.h"
 
 
 //A function to print a yellow smiley face and welcome the user with his name
@@ -101,18 +77,6 @@ void conversionList(){
     COLOR_YELLOW
     printf("Enter here: ");
     COLOR_RESET
-}
-
-
-//Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
-bool flushBufferReturnCounter(){
-    char dummyChar; // Create a dummy character to consume the buffer 
-    int numOfFlushes = 0; // Count how many characters consumed
-    // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
-    while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
-        if (dummyChar != ' ') numOfFlushes = 1; 
-    }
-    return numOfFlushes;
 }
 
 
@@ -219,6 +183,60 @@ bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
             break;
     }
     return false;
+}
+
+
+// A function to scan, validate, convert, and print the converted number
+void getInputNumberAndConvert(int chosenSystem){
+    COLOR_INIT
+    int numOfFlushes;
+    COLOR_YELLOW
+        printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
+        COLOR_RESET
+        int sizeOfArrays = 512; //! Change in "scanf()" as well
+        char inputNumber[sizeOfArrays]; // Array to store user input
+        // Get user input and validate the input based on the system user chose
+        do{
+            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
+            scanf("%511s", &inputNumber);
+            numOfFlushes = flushBufferReturnCounter();
+        }while(validateSystem(inputNumber, numOfFlushes, chosenSystem));
+        
+        // Initialize containers for the result of the conversions
+        char binaryArray[sizeOfArrays];
+        char octalArray[sizeOfArrays];
+        char hexArrayU[sizeOfArrays];
+        char hexArrayL[sizeOfArrays];
+        int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
+        
+        BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
+        if (chosenSystem != 4){
+            decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
+            compareToZero = BigInt_compare_int(decimalInput, 0); 
+            // Result of comparing the user input by zero {to handle negatives}
+                // The BigInt_compare_int() returns 0 if both equal, 1 if the first is bigger 
+                    //(i.e positive) , and -1 if the latter is bigger (negative)
+        } 
+        else{
+            // We can't do the same thing with hexa as it contains non-digits character
+            if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
+            else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
+        }
+
+    switch(chosenSystem){
+        case 1:
+            binaryConversions(inputNumber, octalArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 2:
+            octalConversions(inputNumber, binaryArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 3:
+            decimalConversions(decimalInput, binaryArray, octalArray, hexArrayU, hexArrayL, compareToZero);
+            break;
+        case 4:
+            hexConversions(inputNumber, binaryArray, octalArray, compareToZero);
+            break;
+    }
 }
 
 
@@ -434,61 +452,6 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
 }
 
 
-/*A function to print the closing screen.*/
-void displayClosingMessage() {
-    COLOR_INIT
-    COLOR_GREEN
-    printf("\n\t\tMade By: ^NumberSystem Wizards^\n\n"
-            "Master of welcomes and creative formatter: "); COLOR_RED printf("Abdelrahman Nader\n"); COLOR_GREEN
-            printf("Troubleshoot wizard: ");                COLOR_RED printf("Mohannad Elsayed \n"); COLOR_GREEN
-            printf("Pioneer of Transformation: ");          COLOR_RED printf("Hania Hisham\n"); COLOR_GREEN
-            printf("Conversion Engineer: ");                COLOR_RED printf("Nada Ahmed\n"); COLOR_GREEN
-            printf("Transformation Specialist: ");          COLOR_RED printf("Hannah Ramadan\n"); COLOR_GREEN
-            printf("Farewell Formatter: ");                 COLOR_RED printf("Ganaa Attia\n"); COLOR_GREEN
-            printf("Closing Scene Stylist: ");              COLOR_RED printf("Yara Hossam\n\n"); COLOR_GREEN
-            printf("\t\t\t Bye Bye!\n");
-    COLOR_RESET
-}
-
-// Check the response of tryAgain() function
-bool checkResponse(int numOfFlushes, char response){
-    COLOR_INIT // Initiate the color changing 
-    if (((response != 'y' && response != 'Y') && (response != 'n' && response != 'N')) || numOfFlushes != 0){
-        COLOR_RED
-        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
-        COLOR_RESET
-        return true;
-    }
-    return false;
-}
-
-
-/*A function to get the input character from the user (y,n). 
-    Implemented here to free some space in main*/
-char getCharResponse(){
-    char response = 0; // To store the response of the user about leaving the program
-    int numOfFlushes = 0;
-    do {
-        scanf(" %c", &response);
-        numOfFlushes = flushBufferReturnCounter(); // Read the buffer, if not zero, the user entered more than one character.
-    } while (checkResponse(numOfFlushes, response));
-    return response;
-}
-
-
-/*A function to determine whether to exit the program or to start again based on user choice*/
-bool tryAgain(char response){
-    if (response == 'n' || response == 'N'){ 
-        displayClosingMessage(); // If the user entered (N,n), Then display the message and exit the program.
-        return false;
-    }
-    else{
-        system("cls"); // To clear the screen and try again.
-        return true;
-    }
-}
-
-
 // To convert and print the conversions if the user entered a binary number
 void binaryConversions(char* inputNumber, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
     BigInt* decimalInput = binaryToDecimal(inputNumber, compareToZero);
@@ -528,57 +491,60 @@ void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int 
 }
 
 
-// A function to scan, validate, convert, and print the converted number
-void getInputNumberAndConvert(int chosenSystem){
-    COLOR_INIT
-    int numOfFlushes;
-    COLOR_YELLOW
-        printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
-        COLOR_RESET
-        int sizeOfArrays = 512; //! Change in "scanf()" as well
-        char inputNumber[sizeOfArrays]; // Array to store user input
-        // Get user input and validate the input based on the system user chose
-        do{
-            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%511s", &inputNumber);
-            numOfFlushes = flushBufferReturnCounter();
-        }while(validateSystem(inputNumber, numOfFlushes, chosenSystem));
-        
-        // Initialize containers for the result of the conversions
-        char binaryArray[sizeOfArrays];
-        char octalArray[sizeOfArrays];
-        char hexArrayU[sizeOfArrays];
-        char hexArrayL[sizeOfArrays];
-        int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
-        
-        BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
-        if (chosenSystem != 4){
-            decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
-            compareToZero = BigInt_compare_int(decimalInput, 0); 
-            // Result of comparing the user input by zero {to handle negatives}
-                // The BigInt_compare_int() returns 0 if both equal, 1 if the first is bigger 
-                    //(i.e positive) , and -1 if the latter is bigger (negative)
-        } 
-        else{
-            // We can't do the same thing with hexa as it contains non-digits character
-            if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
-            else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
-        }
 
-    switch(chosenSystem){
-        case 1:
-            binaryConversions(inputNumber, octalArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 2:
-            octalConversions(inputNumber, binaryArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 3:
-            decimalConversions(decimalInput, binaryArray, octalArray, hexArrayU, hexArrayL, compareToZero);
-            break;
-        case 4:
-            hexConversions(inputNumber, binaryArray, octalArray, compareToZero);
-            break;
+/*A function to get the input character from the user (y,n). 
+    Implemented here to free some space in main*/
+char getCharResponse(){
+    char response = 0; // To store the response of the user about leaving the program
+    int numOfFlushes = 0;
+    do {
+        scanf(" %c", &response);
+        numOfFlushes = flushBufferReturnCounter(); // Read the buffer, if not zero, the user entered more than one character.
+    } while (checkResponse(numOfFlushes, response));
+    return response;
+}
+
+
+// Check the response of tryAgain() function
+bool checkResponse(int numOfFlushes, char response){
+    COLOR_INIT // Initiate the color changing 
+    if (((response != 'y' && response != 'Y') && (response != 'n' && response != 'N')) || numOfFlushes != 0){
+        COLOR_RED
+        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
+        COLOR_RESET
+        return true;
     }
+    return false;
+}
+
+
+/*A function to determine whether to exit the program or to start again based on user choice*/
+bool tryAgain(char response){
+    if (response == 'n' || response == 'N'){ 
+        displayClosingMessage(); // If the user entered (N,n), Then display the message and exit the program.
+        return false;
+    }
+    else{
+        system("cls"); // To clear the screen and try again.
+        return true;
+    }
+}
+
+
+/*A function to print the closing screen.*/
+void displayClosingMessage() {
+    COLOR_INIT
+    COLOR_GREEN
+    printf("\n\t\tMade By: ^NumberSystem Wizards^\n\n"
+            "Master of welcomes and creative formatter: "); COLOR_RED printf("Abdelrahman Nader\n"); COLOR_GREEN
+            printf("Troubleshoot wizard: ");                COLOR_RED printf("Mohannad Elsayed \n"); COLOR_GREEN
+            printf("Pioneer of Transformation: ");          COLOR_RED printf("Hania Hisham\n"); COLOR_GREEN
+            printf("Conversion Engineer: ");                COLOR_RED printf("Nada Ahmed\n"); COLOR_GREEN
+            printf("Transformation Specialist: ");          COLOR_RED printf("Hannah Ramadan\n"); COLOR_GREEN
+            printf("Farewell Formatter: ");                 COLOR_RED printf("Ganaa Attia\n"); COLOR_GREEN
+            printf("Closing Scene Stylist: ");              COLOR_RED printf("Yara Hossam\n\n"); COLOR_GREEN
+            printf("\t\t\t Bye Bye!\n");
+    COLOR_RESET
 }
 
 
@@ -603,30 +569,13 @@ int getChosenSystem(){
 }
 
 
-int main(){
-    COLOR_INIT
-    char response;  // Global variable to store user choice whether to leave the program or to try again.
-    initWelcomeScreen();
-
-    do {
-        response = 0;
-        int chosenSystem = getChosenSystem();
-
-        if (chosenSystem == 5){ // Handle exiting the program.
-            tryAgain('n'); 
-            // This should pass 'n' to tryAgain function which will display the closing message.
-            break; // Break from the loop (i.e close the program).
-        }
-
-        getInputNumberAndConvert(chosenSystem);
-
-        COLOR_BLUE printf( "\n<------------------------------------------------------>\n"
-                            "<------------------------------------------------------>\n"); COLOR_RESET
-        
-        printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n");
-        response = getCharResponse(); 
-
-    }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
-    getchar();
-  return 0;
+//Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
+bool flushBufferReturnCounter(){
+    char dummyChar; // Create a dummy character to consume the buffer 
+    int numOfFlushes = 0; // Count how many characters consumed
+    // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
+    while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
+        if (dummyChar != ' ') numOfFlushes = 1; 
+    }
+    return numOfFlushes;
 }
