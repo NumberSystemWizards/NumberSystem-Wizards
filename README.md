@@ -38,9 +38,6 @@ This C program is a number system converter that allows users to convert between
 - **Inefficiency in Decimal Conversions:**
   - The method used for converting from and to decimal may not be the most efficient, especially for large numbers. There is room for optimization in these conversion processes.
 
-- **Code Organization:**
-  - The code is not divided into header files. While not necessary for a small project like this, it may become less maintainable as the codebase grows.
-
 ## Usage
 1. Run the program.
 2. Enter your name when prompted.
