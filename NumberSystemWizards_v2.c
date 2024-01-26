@@ -161,7 +161,7 @@ void getInputNumberAndConvert(int chosenSystem){
         COLOR_RESET
         int sizeOfArrays = 512; //! Change in "scanf()" as well
         char inputNumber[sizeOfArrays]; // Array to store user input
-        // Get user input and validate the input based on the system user chose
+        // Get user input number and validate the input based on the system user chose
         do{
             COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
             scanf("%511s", &inputNumber);
@@ -173,9 +173,9 @@ void getInputNumberAndConvert(int chosenSystem){
         char octalArray[sizeOfArrays];
         char hexArrayU[sizeOfArrays];
         char hexArrayL[sizeOfArrays];
-        int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
+        int compareToZero = 1; // Initialize the compare variable to determine whether the input number is zero, positive or negative
         
-        BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
+        BigInt* decimalInput = BigInt_construct(0); // Initialize a number variable to store decimal conversions
         if (chosenSystem != 4){
             decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
             compareToZero = BigInt_compare_int(decimalInput, 0); 
@@ -184,7 +184,7 @@ void getInputNumberAndConvert(int chosenSystem){
                     //(i.e positive) , and -1 if the latter is bigger (negative)
         } 
         else{
-            // We can't do the same thing with hexa as it contains non-digits character
+            // We can't do the previous algorithm with hexa as it contains non-digits character
             if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
             else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
         }
@@ -214,9 +214,9 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
     COLOR_INIT
 
     int arrayLength = strlen(inputNumberArray);
-    if (numOfFlushes != 0){ // User entered multiple numbers seperated by spaces
+    if (numOfFlushes != 0){ // User entered multiple numbers separated by spaces
         COLOR_RED
-        printf("\aPlease enter a valid %s number! Try again with no spaces:\n", systemIndexes[chosenSystem]);
+        printf("\aPlease enter a valid %s number! Please try again:\n", systemIndexes[chosenSystem]);
         COLOR_RESET
         return true;
     }
@@ -238,7 +238,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
             break;
         case 2: 
             for(indx; indx < arrayLength; ++indx){  
-                char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
+                char currentChar = inputNumberArray[indx];
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
                                                                                         // and make sure the user didn't enter '-' sign only!
                 if (currentChar < '0' || '7' < currentChar){
@@ -251,7 +251,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
             break;
         case 3: 
             for(indx; indx < arrayLength; ++indx){  
-                char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
+                char currentChar = inputNumberArray[indx];
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
                                                                                         // and make sure the user didn't enter '-' sign only!
                 if (!isdigit(currentChar)){
@@ -263,8 +263,8 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
             }
             break;
         case 4: 
-        // Validate hexadecimal system {all characters must be digits or range between [a-f] (inclusive, case doesn't matter) 
-            //except the first character maybe the sign '-' if it's negative}
+        // Validate hexadecimal system {all characters must be either digits or range between [a-f] (inclusive, case doesn't matter) 
+            //except the first character maybe (char)'-' if it's negative}
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -291,16 +291,16 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
 
 
 /**A function that raises a BigInt to a power (long long), by repeatedly multiplying the BigInt by itself.
- * Accepts The BigInt and the exponenet.
- * The function returns a BigInt, the result of base^exponenet (^ donates power not XOR)
+ * Accepts The BigInt and the exponent.
+ * The function returns a BigInt, the result of base^exponent (^ donates power not XOR)
 */
 BigInt* BigInt_pow(BigInt* base, long long int exponent){
 
-    // Initialize a BigInt to the value 1 to begint the multiplication
+    // Initialize a BigInt to the value 1 to begin the multiplication
     BigInt* multiplicationResult = BigInt_construct(1); 
 
     for (int i = 0; i<exponent; ++i){
-        /*Repeatidly multiply the result by the base and store it in the result variable*/
+        /*Repeatedly multiply the result by the base and store it in the result variable*/
         BigInt_multiply(multiplicationResult, base);
     }
     return multiplicationResult;
@@ -351,7 +351,7 @@ void decimalToBinary(BigInt* decimalNumber, char *binaryArray, int compareToZero
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
 
-    // It's very important to freeup all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
+    // It's very important to free up all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
     BigInt_free(decimalNumberClone);
     BigInt_free(divisor);
     BigInt_free(remainder);
@@ -374,8 +374,8 @@ BigInt* octalToDecimal(char* octalArray, int compareToZero){
     for (indx, power; indx >- 1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
         if (octalArray[indx] == '0' || octalArray[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
-        int multiplicationOperand2 = octalArray[indx]-'0'; // The secon oprand in the multiplication process is set to the current value in the octal number
+        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
+        int multiplicationOperand2 = octalArray[indx]-'0'; // The second operand in the multiplication process is set to the current value in the octal number
         BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2); 
         BigInt_add(decimalBig, multiplicationOperand1);
     }
@@ -410,7 +410,7 @@ void decimalToOctal(BigInt* decimalNumber, char *octalArray, int compareToZero){
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
 
-    // It's very important to freeup all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
+    // It's very important to free up all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
     BigInt_free(decimalNumberClone);
     BigInt_free(divisor);
     BigInt_free(remainder);
@@ -434,9 +434,9 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
 
         if (hexArray[indx] == '0' || hexArray[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
+        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
         int multiplicationOperand2 = -1; // Initialize the variable to a negative value for better debugging
-            // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to conver from ASCII to int)
+            // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to convert from ASCII to int)
                 // and if it's a character, convert it to an integer 
         if ('0' <= hexArray[indx] && hexArray[indx] <= '9')  multiplicationOperand2 = hexArray[indx] - '0';
         else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  multiplicationOperand2 = hexArray[indx] - 'a' + 10; // Lowercase must be checked first
@@ -487,7 +487,7 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
 
-    // It's very important to freeup all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
+    // It's very important to free up all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
     BigInt_free(decimalNumberClone);
     BigInt_free(divisor);
     BigInt_free(remainder);
@@ -523,7 +523,7 @@ void octalConversions(char* inputNumber, char* binaryArray, char* hexArrayU, cha
     decimalToBinary(decimalInput, binaryArray, compareToZero);
     bool haveCharacters = decimalToHex(decimalInput, hexArrayU, hexArrayL, compareToZero);
     printf("\n\nbin: %s\nhexU: %s\n", strrev(binaryArray), strrev(hexArrayU));
-    if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
+    if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));  
 }
 
 // To convert and print the conversions if the user entered a decimal number
