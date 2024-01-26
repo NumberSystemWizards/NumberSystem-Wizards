@@ -6,7 +6,6 @@
 #include <conio.h>      
 #include <ctype.h>      // isdigit()
 #include <windows.h>    // To change text color in console
-#include <assert.h>     // To allocate space to BigIntegers
 
 #include "BigInt.c"     // BigInt Library
 
