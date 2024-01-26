@@ -24,6 +24,6 @@ int main(){
         response = getCharResponse(); // Get the response of the previous question
 
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
-    printf("Press Enter to exit..."); getchar(); // To stop the terminal from dissappearing after the closing display
+    printf("Press Enter to exit..."); getchar(); // To stop the terminal from disappearing after the closing display
   return 0;
 }
