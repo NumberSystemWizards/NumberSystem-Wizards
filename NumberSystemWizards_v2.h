@@ -1,28 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h> 
-#include <math.h>       // pow()
-#include <stdbool.h>    // bool data type
-#include <string.h>     // strlen(), strrev()
-#include <ctype.h>      // isdigit()
-#include <windows.h>    // To change text color in console
-
-#include "BigInt.c"     // BigInt Library
-
-
-// Macros to reset &change text colors: (instead or writing it multiple times)
-  // Initiate handle for console, must be in every function uses color changing feature.
-  #define COLOR_INIT      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-#define COLOR_RESET     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_BLUE);
-#define COLOR_RED       SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-#define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
-#define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
-#define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
-
-
-/*Global Decleration*/
-//Initialize the indexes of the system to be used in the code
-char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"};
 
 
 //A function to print a yellow smiley face and welcome the user with his name
