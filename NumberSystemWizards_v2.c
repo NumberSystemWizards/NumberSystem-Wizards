@@ -15,15 +15,17 @@
 #define COLOR_RESET     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_BLUE);
 #define COLOR_RED       SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 #define COLOR_GREEN     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+#define COLOR_BLUE      SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
 #define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
 #define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
+
 
 /*Global Decleration*/
 //Initialize the indexes of the system to be used in the code
 char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"}; 
-int maxInputPerSystem[5] = {0, 18, 17, 8, 7}; // Restrict the maximum length of user input to avoid over flow.
 
+
+//A function to print a yellow smiley face and welcome the user with his name
 void initWelcomeScreen(){
     COLOR_INIT
     char userName[100];
@@ -59,7 +61,6 @@ void initWelcomeScreen(){
     printf("OH! It is a pleasure to see you :D\nMay I know your name? -> : ");
 
     //Taking the user name from the user.
-    //scanf("%s",&userName);
     gets(userName);
     COLOR_YELLOW
     //Printing a line depending on the username length to fit the messege.
@@ -68,7 +69,6 @@ void initWelcomeScreen(){
         printf("-");
     }
     printf(">\n");
-
 
     //Printing the Welcome messege.
     printf("^ Welcome"); 
@@ -84,8 +84,9 @@ void initWelcomeScreen(){
     COLOR_RESET
 }
 
+
+//A function to print the options list.
 void conversionList(){
-    /*A function to print the options list.*/
     COLOR_INIT
     COLOR_YELLOW
     printf("\t\t--> Conversion Types List <--\n\n");
@@ -97,29 +98,31 @@ void conversionList(){
     " 5- Exit the program.\n");
     COLOR_BLUE
     printf("\n\tPlease select the required system from the previous list\n");
+    COLOR_YELLOW
+    printf("Enter here: ");
     COLOR_RESET
 }
 
 
-int flushBufferReturnCounter(){
-    /* Removes unwanted characters from the input stream, return the number of flushed characters */
+//Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
+bool flushBufferReturnCounter(){
     char dummyChar; // Create a dummy character to consume the buffer 
-    int numOfCharactersConsumed=0; // Count how many characters consumed
+    int numOfFlushes = 0; // Count how many characters consumed
     // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
     while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
-        if (dummyChar != ' ') numOfCharactersConsumed++; 
+        if (dummyChar != ' ') numOfFlushes = 1; 
     }
-    return numOfCharactersConsumed;
+    return numOfFlushes;
 }
 
 
+/*Check if 
+    * 1- The System index the user chose is actually valid i.e from [1 - 4]
+    * 2- If the user unintentionally entered a character, string, float, or any other type
+    * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
+    * 1 indecates the input is not valid and continue the while loop and get the input again
+    */
 bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
-    /*Check if 
-     * 1- The System index the user chose is actually valid i.e from [1 - 4]
-     * 2- If the user unintentionally entered a character, string, float, or any other type
-     * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
-     * 1 indecates the input is not valid and continue the while loop and get the input again
-     */
 
     COLOR_INIT
     if (numOfScannedVariables != 1 || numOfFlushes != 0){
@@ -139,27 +142,25 @@ bool checkSystemIndex(int chosenSystem, int numOfScannedVariables, int numOfFlus
     return false;
 }
 
+
+/** Check The validity of the input number
+ * Returns 0 in case of the validation is correct (to exit the do-while loop)
+ * Returns 1 if the input is not valid
+*/
 bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
-    /*Check the validity of the entered Hex number
-     * first it checks if the character is digit, if not, it checks if it's {a,b,c,d,e,f}.
-     * returns a boolean expression (0,1)where 0 indicates the input is valid and terminate the while loop
-     * and 1 indecates the input is not valid and continue the while loop and get the input again.
-     * */
     COLOR_INIT
 
     int arrayLength = strlen(inputNumberArray);
-
-    if (numOfFlushes != 0){ // User entered spaces in the number which wasn't scaned by "scanf()"
+    if (numOfFlushes != 0){ // User entered multiple numbers seperated by spaces
         COLOR_RED
         printf("\aPlease enter a valid %s number! Try again with no spaces:\n", systemIndexes[chosenSystem]);
         COLOR_RESET
         return true;
     }
 
-    int indx = 0; // Index to iterate the array
+    int indx = 0; // Index to iterate over the array
     switch (chosenSystem){
         case 1: 
-        // Validate binary system {all characters must be either '0' or '1' except the first character maybe the sign '-' if it's negative}
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -173,7 +174,6 @@ bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
             }
             break;
         case 2: 
-        // Validate octal system {all characters must range between [0-7] inclusive except the first character maybe the sign '-' if it's negative}
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -187,14 +187,13 @@ bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
             }
             break;
         case 3: 
-        // Validate decimal system {all characters must be digits except the first character maybe the sign '-' if it's negative}
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
                                                                                         // and make sure the user didn't enter '-' sign only!
                 if (!isdigit(currentChar)){
                     COLOR_RED
-                    printf("\aPlease enter a valid %s number. \n\tDecimal numbers should not contain any non-digits characters.\n", systemIndexes[chosenSystem]);
+                    printf("\aPlease enter a valid %s number. \n\tDecimal numbers should not contain any non-digit characters.\n", systemIndexes[chosenSystem]);
                     COLOR_RESET
                     return true;
                 }
@@ -223,13 +222,11 @@ bool validateSystem(char *inputNumberArray, int numOfFlushes, int chosenSystem){
 }
 
 
-//! power function
+/**A function that raises a BigInt to a power (long long), by repeatedly multiplying the BigInt by itself.
+ * Accepts The BigInt and the exponenet.
+ * The function returns a BigInt, the result of base^exponenet (^ donates power not XOR)
+*/
 BigInt* BigInt_pow(BigInt* base, long long int exponent){
-    /**A function that raises a BigInt to a power (long long), by repeatedly multiplying the BigInt by itself.
-     * Accepts The BigInt and the exponenet.
-     * It's crucial to free up the memory allocated to the BigInt in this function.
-     * The function returns a BigInt, the result of base^exponenet (^ donates power not XOR)
-    */
 
     // Initialize a BigInt to the value 1 to begint the multiplication
     BigInt* multiplicationResult = BigInt_construct(1); 
@@ -239,58 +236,50 @@ BigInt* BigInt_pow(BigInt* base, long long int exponent){
         BigInt_multiply(multiplicationResult, base);
     }
     return multiplicationResult;
-    BigInt_free(multiplicationResult); // Have no effect ?
 }
 
 
-//! ****************************************************************************************************Binary
-BigInt* binaryToDecimal(char* binaryArray, int signComparer){
-    /** A function to convert an array of binary characters to decimal */
+/** A function to convert an array of binary characters to decimal */
+BigInt* binaryToDecimal(char* binaryArray, int compareToZero){
 
-    BigInt* decimalBig = BigInt_construct(0); // Initializing BigInt is very important
-    if (!signComparer) return decimalBig; // Handle '0' input
+    BigInt* decimalBig = BigInt_construct(0);
+    if (!compareToZero) return decimalBig; // Handle '0' input
+    BigInt* base = BigInt_construct(2);
+    int indx = strlen(binaryArray) - 1; long long power = 0;
 
-    BigInt* exp = BigInt_construct(2);
-
-    int indx = strlen(binaryArray) - 1; long long p = 0;
-
-    for (indx, p; indx >- 1; --indx, ++p){
+    for (indx, power; indx >- 1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
         if (binaryArray[indx] == '0' || binaryArray[indx] == '-') continue;
-        BigInt_add(decimalBig, BigInt_pow(exp,p));
+        BigInt_add(decimalBig, BigInt_pow(base,power));
     }
-    BigInt_free(exp);
-    if (signComparer < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
+    BigInt_free(base);
+    if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
 }
 
 
 
-void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int signComparer){ 
-    /**A function to convert a BigInt decimal number to binary number
-     * assign the first digit in the binary array to '-' sign only if the number is negative
-    */
-    
+/**A function to convert a BigInt decimal number to binary number
+ * assign the first digit in the binary array to '-' sign only if the number is negative
+*/
+void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int compareToZero){ 
     // Handle Input zero case
-    if (!signComparer){ // i.e exactly == zero
+    if (!compareToZero){ // i.e exactly == zero
         binaryArrayReturn[0] = '0';
         return;
     }
 
     BigInt* divisor = BigInt_construct(2);
     BigInt* remainder = BigInt_construct(1);
-    // Make a clone of the bigInt so when modifying it, it doesn't affect other conversions
+    // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
     BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
-    long long index = 0;  // Keep track of the current index of the hexArray
+    long long index = 0; 
 
     do{
-        // Make the division, assign the quotient in decimalNumber, assign the remainder to the remainder variable {neat right?}
+        // Make the division, assign the quotient to decimalNumber, assign the remainder to the remainder variable {neat right?}
         BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder); 
-
-        char rem[2] = {}; // Get the remainder in a string, important to use BigInt_to_string() function
-
-        BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the binaryArray)
-        
+        char rem[2] = {};   // Get the remainder in a string, important to use BigInt_to_string() function
+        BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the binaryArray)        
         binaryArrayReturn[index] = rem[0];
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
@@ -300,66 +289,55 @@ void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int signCom
     BigInt_free(divisor);
     BigInt_free(remainder);
 
-    if (signComparer < 0){ // Handle negative input
-        // Make the last character negative sign, remember! the string will be printed in reverse
+    if (compareToZero < 0){ // Handle negative input
+        // Make the last character a negative sign, remember! the string will be printed in reverse
         binaryArrayReturn[index] = '-'; 
     }
 }
 
 
+/** A function to convert an array of octal characters to decimal */
+BigInt* octalToDecimal(char* octal, int compareToZero){
 
+    BigInt* decimalBig = BigInt_construct(0); 
+    if (!compareToZero) return decimalBig; // Handle '0' input
+    BigInt* base = BigInt_construct(8);
+    int indx = strlen(octal) - 1; long long power = 0; // Power of base 8
 
-
-//! **************************************************************************************************Octa
-BigInt* octalToDecimal(char* octal, int signComparer){
-    /** A function to convert an array of octal characters to decimal */
-
-    BigInt* decimalBig = BigInt_construct(0); // Initializing BigInt is very important
-    if (!signComparer) return decimalBig; // Handle '0' input
-
-    BigInt* exp = BigInt_construct(8);
-
-    int indx = strlen(octal) - 1; long long p = 0; // Power of 8
-
-    for (indx, p; indx >- 1; --indx, ++p){
+    for (indx, power; indx >- 1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
         if (octal[indx] == '0' || octal[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(exp,p); // The first oprand in the multiplication process is set to the power result (8^sth)
+        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
         int multiplicationOperand2 = octal[indx]-'0'; // The secon oprand in the multiplication process is set to the current value in the octal number
         BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2); 
         BigInt_add(decimalBig, multiplicationOperand1);
     }
-
-    BigInt_free(exp);
-    if (signComparer < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
+    BigInt_free(base);
+    if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
 }
 
 
-void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int signComparer){ 
-    /**A function to convert a BigInt decimal number to octal number
-     * assign the first digit in the octal array to '-' sign only if the number is negative
-    */
-    
+/**A function to convert a BigInt decimal number to octal number
+ * assign the first digit in the octal array to '-' sign only if the number is negative*/
+void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int compareToZero){ 
     // Handle Input zero case
-    if (!signComparer){ // i.e exactly == zero
+    if (!compareToZero){ // i.e exactly == zero
         octalArrayReturn[0] = '0';
         return;
     }
 
     BigInt* divisor = BigInt_construct(8);
     BigInt* remainder = BigInt_construct(1);
-    // Make a clone of the bigInt so when modifying it, it doesn't affect other conversions
+    // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
     BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
     long long index = 0;  // Keep track of the current index of the hexArray
 
     do{
-        // Make the division, assign the quotient in decimalNumber, assign the remainder to the remainder variable {neat right?}
+        // Make the division, assign the quotient to decimalNumber, assign the remainder to the remainder variable {neat right?}
         BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder); 
-
-        char rem[2] = {}; // Get the remainder in a string, important to use BigInt_to_string() function
-
-        BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the octalArray)
+        char rem[2] = {};   // Get the remainder in a string, important to be able to use BigInt_to_string() function
+        BigInt_to_string(remainder, rem, 2); // Convert the remainder (as BigInt) to a string (to modify the octalArray)
         
         octalArrayReturn[index] = rem[0];
         index++;
@@ -370,30 +348,27 @@ void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int signCompa
     BigInt_free(divisor);
     BigInt_free(remainder);
 
-    if (signComparer < 0){ // Handle negative input
+    if (compareToZero < 0){ // Handle negative input
         // Make the last character negative sign, remember! the string will be printed in reverse
         octalArrayReturn[index] = '-'; 
     }
 }
 
 
-//! **************************************************************************************************Hexadecimal
-BigInt* hexToDecimal(char* hex, int signComparer){
-    /** A function to convert an array of hex characters to decimal */
+/** A function to convert an array of hex characters to decimal */
+BigInt* hexToDecimal(char* hex, int compareToZero){
 
-    // printf("sc%d\n", signComparer);
     BigInt* decimalBig = BigInt_construct(0); // Initializing BigInt is very important
-    if (!signComparer) return decimalBig; // Handle '0' input
+    if (!compareToZero) return decimalBig; // Handle '0' input
+    BigInt* base = BigInt_construct(16);
+    int indx = strlen(hex) - 1; long long power = 0; // Power of base 16
 
-    BigInt* exp = BigInt_construct(16);
-    int indx = strlen(hex) - 1; long long p = 0; // Power of 16
-
-    for (indx, p; indx > -1; --indx, ++p){
+    for (indx, power; indx > -1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
 
         if (hex[indx] == '0' || hex[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(exp,p); // The first oprand in the multiplication process is set to the power result (8^sth)
-        int multiplicationOperand2 = -1; // Initialize the variable to a negative for better debugging
+        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
+        int multiplicationOperand2 = -1; // Initialize the variable to a negative value for better debugging
             // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to conver from ASCII to int)
                 // and if it's a character, convert it to an integer 
         if ('0' <= hex[indx] && hex[indx] <= '9')  multiplicationOperand2 = hex[indx] - '0';
@@ -403,33 +378,31 @@ BigInt* hexToDecimal(char* hex, int signComparer){
         BigInt_add(decimalBig, multiplicationOperand1);
     }
 
-    BigInt_free(exp);
-    if (signComparer < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
+    BigInt_free(base);
+    if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
 }
 
 
-
-bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLower, int signComparer){ 
-    /**A function to convert a BigInt decimal number to hex number
-     * Assign the first digit in the hex array to '-' sign only if the number is negative
-    */
+/**A function to convert a BigInt decimal number to hex number
+ * Assign the first digit in the hex array to '-' sign only if the number is negative*/
+bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLower, int compareToZero){ 
     
-    bool haveCharacters = false; // To know if there's characters in the hex number and pring upper and lower or only upper
+    bool haveCharacters = false; // If there's no characters in the hex numbers, print only the lowercase, as the uppercase would be identical
     // Handle Input zero case
-    if (!signComparer){ // i.e the input number exactly == zero
+    if (!compareToZero){ // i.e the input number exactly == zero
         hexArrayUpper[0] = '0';
         hexArrayLower[0] = '0';
         return false;
     }
     BigInt* divisor = BigInt_construct(16);
     BigInt* remainder = BigInt_construct(0);
-    // Make a clone of the bigInt so when modifying it, it doesn't affect other conversions
+    // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
     BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
     long long index = 0;  // Keep track of the current index of the hexArray
 
     do{
-        // Make the division, assign the quotient in decimalNumber, assign the remainder to the remainder variable {neat right?}
+        // Make the division, assign the quotient to decimalNumber, assign the remainder to the remainder variable {neat right?}
         BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder); 
         char rem[2] = {}; // Get the remainder in a string, important to use BigInt_to_string() function
         BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the hexArray)
@@ -440,21 +413,20 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
         } 
         else{
             haveCharacters = true;
-            // Otherwise, we get the corresponding hex value of the remainder [A-F] for upper array
+            // Getting the corresponding hex value of the remainder [A-F] for upper array
             hexArrayUpper[index] = remInt + 55; 
             // And store the same value but lower in the lower array
             hexArrayLower[index] = hexArrayUpper[index] + ' '; // Add space or 32 in ASCII to convert from upper to lower
         }         
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
-    // Prompt the user to pring the number in 
 
     // It's very important to freeup all BigInt number created, otherwise it's an elegant way to kill the RAM ^_^
     BigInt_free(decimalNumberClone);
     BigInt_free(divisor);
     BigInt_free(remainder);
 
-    if (signComparer < 0){ // Handle negative input
+    if (compareToZero < 0){ // Handle negative input
         // Make the last character negative sign, remember! the string will be printed in reverse
         hexArrayUpper[index] = '-'; 
         hexArrayLower[index] = '-';
@@ -463,10 +435,8 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
 }
 
 
-
-//! *************************************************************** End of conversions *****************************************************************************/
+/*A function to print the closing screen.*/
 void displayClosingMessage() {
-    /*A function to print the closing screen.*/
     COLOR_INIT
     COLOR_GREEN
     printf("\n\t\tMade By: ^NumberSystem Wizards^\n\n"
@@ -481,20 +451,22 @@ void displayClosingMessage() {
     COLOR_RESET
 }
 
+// Check the response of tryAgain() function
 bool checkResponse(int numOfFlushes, char response){
     COLOR_INIT // Initiate the color changing 
     if (((response != 'y' && response != 'Y') && (response != 'n' && response != 'N')) || numOfFlushes != 0){
         COLOR_RED
-        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n");
+        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
         COLOR_RESET
         return true;
     }
     return false;
 }
 
+
+/*A function to get the input character from the user (y,n). 
+    Implemented here to free some space in main*/
 char getCharResponse(){
-    /*A function to check the input character from the user (y,n). 
-      Implemented here to free some space in main*/
     char response = 0; // To store the response of the user about leaving the program
     int numOfFlushes = 0;
     do {
@@ -504,8 +476,9 @@ char getCharResponse(){
     return response;
 }
 
+
+/*A function to determine whether to exit the program or to start again based on user choice*/
 bool tryAgain(char response){
-    /*A function to determine whether to exit the program or to start again based on user choice*/
     if (response == 'n' || response == 'N'){ 
         displayClosingMessage(); // If the user entered (N,n), Then display the message and exit the program.
         return false;
@@ -516,6 +489,8 @@ bool tryAgain(char response){
     }
 }
 
+
+// To convert and print the conversions if the user entered a binary number
 void binaryConversions(char* inputNumber, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
     BigInt* decimalInput = binaryToDecimal(inputNumber, compareToZero);
     printf("decimal: "); BigInt_print(decimalInput);
@@ -525,6 +500,7 @@ void binaryConversions(char* inputNumber, char* octalArray, char* hexArrayU, cha
     if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
 }
 
+// To convert and print the conversions if the user entered an octal number
 void octalConversions(char* inputNumber, char* binaryArray, char* hexArrayU, char* hexArrayL, int compareToZero){
     BigInt* decimalInput = octalToDecimal(inputNumber, compareToZero);
     printf("decimal: "); BigInt_print(decimalInput);
@@ -534,6 +510,7 @@ void octalConversions(char* inputNumber, char* binaryArray, char* hexArrayU, cha
     if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
 }
 
+// To convert and print the conversions if the user entered a decimal number
 void decimalConversions(BigInt* inputNumber, char* binaryArray, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
     decimalToBinary(inputNumber, binaryArray, compareToZero);
     decimalToOctal(inputNumber, octalArray, compareToZero);
@@ -542,18 +519,18 @@ void decimalConversions(BigInt* inputNumber, char* binaryArray, char* octalArray
     if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
 }
 
+// To convert and print the conversions if the user entered a hexadecimal number
 void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int compareToZero){
     BigInt* decimalInput = hexToDecimal(inputNumber, compareToZero);
     decimalToBinary(decimalInput, binaryArray, compareToZero);
     decimalToOctal(decimalInput, octalArray, compareToZero);
     printf("\n\nbin: %s\noct: %s\ndec: ", strrev(binaryArray), strrev(octalArray));
     BigInt_print(decimalInput);
-
 }
 
 
-
-void getInputAndConvert(int chosenSystem){
+// A function to scan, validate, convert, and print the converted number
+void getInputNumberAndConvert(int chosenSystem){
     COLOR_INIT
     int numOfFlushes;
     COLOR_YELLOW
@@ -563,6 +540,7 @@ void getInputAndConvert(int chosenSystem){
         char inputNumber[sizeOfArrays]; // Array to store user input
         // Get user input and validate the input based on the system user chose
         do{
+            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
             scanf("%511s", &inputNumber);
             numOfFlushes = flushBufferReturnCounter();
         }while(validateSystem(inputNumber, numOfFlushes, chosenSystem));
@@ -575,9 +553,6 @@ void getInputAndConvert(int chosenSystem){
         int compareToZero = 1; // Initialize the compare variable to determine whether the variable is zero, positive or negative
         
         BigInt* decimalInput = BigInt_construct(0); // Initialize a BigInt variable to store decimal conversions
-
-        // printf("Debug567  %s\n", inputNumber);
-
         if (chosenSystem != 4){
             decimalInput =  BigInt_from_string(inputNumber); // Only convert user input number to BigInt if it's not hexadecimal
             compareToZero = BigInt_compare_int(decimalInput, 0); 
@@ -586,6 +561,7 @@ void getInputAndConvert(int chosenSystem){
                     //(i.e positive) , and -1 if the latter is bigger (negative)
         } 
         else{
+            // We can't do the same thing with hexa as it contains non-digits character
             if (strtol(inputNumber, NULL, 16) == 0) compareToZero = 0; // Then check if it's zero
             else if (inputNumber[0] == '-') compareToZero = -1; // Check negativity
         }
@@ -604,21 +580,13 @@ void getInputAndConvert(int chosenSystem){
             hexConversions(inputNumber, binaryArray, octalArray, compareToZero);
             break;
     }
-
 }
 
 
-//! ******************************************** main ******************************************************************/
-//! ******************************************** main ******************************************************************/
-int main(){
-
+// To get and validate the chosen system from the user
+int getChosenSystem(){
     COLOR_INIT
-    char response;  // Global variable to store user choice whether to leave the program or to try again.
-    initWelcomeScreen();
-
-    do {
-        conversionList(); // Calling the conversion list only each time the program starts over
-        response = 0;
+    conversionList(); // Calling the conversion list only each time the program starts over
         int chosenSystem = 0, 
         //The actual system the user chose
         numOfScannedVariables = 0, 
@@ -627,12 +595,23 @@ int main(){
         numOfFlushes = 0; 
         //Check if there was additional unintended input 
             //(counts how many times a character has been removed from the input stream)
-
         do{
-
+            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
             numOfScannedVariables = scanf("%d", &chosenSystem);
             numOfFlushes = flushBufferReturnCounter();
         }while(checkSystemIndex(chosenSystem, numOfScannedVariables, numOfFlushes));
+        return chosenSystem;
+}
+
+
+int main(){
+    COLOR_INIT
+    char response;  // Global variable to store user choice whether to leave the program or to try again.
+    initWelcomeScreen();
+
+    do {
+        response = 0;
+        int chosenSystem = getChosenSystem();
 
         if (chosenSystem == 5){ // Handle exiting the program.
             tryAgain('n'); 
@@ -640,20 +619,15 @@ int main(){
             break; // Break from the loop (i.e return 0 to system and end the program).
         }
 
-        getInputAndConvert(chosenSystem);
+        getInputNumberAndConvert(chosenSystem);
 
-
-
-
-        COLOR_BLUE
-        printf( "\n<------------------------------------------------------>\n"
-                "<------------------------------------------------------>\n");
-        COLOR_RESET
+        COLOR_BLUE printf( "\n<------------------------------------------------------>\n"
+                            "<------------------------------------------------------>\n"); COLOR_RESET
+        
         printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n");
         response = getCharResponse(); 
 
-        // Freeing bigints
-            // BigInt_free(decimalBigInt);
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
+
   return 0;
 }
