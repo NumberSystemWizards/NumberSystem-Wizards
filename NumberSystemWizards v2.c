@@ -3,7 +3,6 @@
 #include <math.h>       // pow()
 #include <stdbool.h>    // bool data type
 #include <string.h>     // strlen(), strrev()
-#include <conio.h>      
 #include <ctype.h>      // isdigit()
 #include <windows.h>    // To change text color in console
 
