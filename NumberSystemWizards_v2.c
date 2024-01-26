@@ -262,10 +262,10 @@ BigInt* binaryToDecimal(char* binaryArray, int compareToZero){
 /**A function to convert a BigInt decimal number to binary number
  * assign the first digit in the binary array to '-' sign only if the number is negative
 */
-void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int compareToZero){ 
+void decimalToBinary(BigInt* decimalNumber, char *binaryArray, int compareToZero){ 
     // Handle Input zero case
     if (!compareToZero){ // i.e exactly == zero
-        binaryArrayReturn[0] = '0';
+        binaryArray[0] = '0';
         return;
     }
 
@@ -280,7 +280,7 @@ void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int compare
         BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder); 
         char rem[2] = {};   // Get the remainder in a string, important to use BigInt_to_string() function
         BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the binaryArray)        
-        binaryArrayReturn[index] = rem[0];
+        binaryArray[index] = rem[0];
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
 
@@ -291,24 +291,24 @@ void decimalToBinary(BigInt* decimalNumber, char *binaryArrayReturn, int compare
 
     if (compareToZero < 0){ // Handle negative input
         // Make the last character a negative sign, remember! the string will be printed in reverse
-        binaryArrayReturn[index] = '-'; 
+        binaryArray[index] = '-'; 
     }
 }
 
 
 /** A function to convert an array of octal characters to decimal */
-BigInt* octalToDecimal(char* octal, int compareToZero){
+BigInt* octalToDecimal(char* octalArray, int compareToZero){
 
     BigInt* decimalBig = BigInt_construct(0); 
     if (!compareToZero) return decimalBig; // Handle '0' input
     BigInt* base = BigInt_construct(8);
-    int indx = strlen(octal) - 1; long long power = 0; // Power of base 8
+    int indx = strlen(octalArray) - 1; long long power = 0; // Power of base 8
 
     for (indx, power; indx >- 1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
-        if (octal[indx] == '0' || octal[indx] == '-') continue;
+        if (octalArray[indx] == '0' || octalArray[indx] == '-') continue;
         BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
-        int multiplicationOperand2 = octal[indx]-'0'; // The secon oprand in the multiplication process is set to the current value in the octal number
+        int multiplicationOperand2 = octalArray[indx]-'0'; // The secon oprand in the multiplication process is set to the current value in the octal number
         BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2); 
         BigInt_add(decimalBig, multiplicationOperand1);
     }
@@ -320,10 +320,10 @@ BigInt* octalToDecimal(char* octal, int compareToZero){
 
 /**A function to convert a BigInt decimal number to octal number
  * assign the first digit in the octal array to '-' sign only if the number is negative*/
-void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int compareToZero){ 
+void decimalToOctal(BigInt* decimalNumber, char *octalArray, int compareToZero){ 
     // Handle Input zero case
     if (!compareToZero){ // i.e exactly == zero
-        octalArrayReturn[0] = '0';
+        octalArray[0] = '0';
         return;
     }
 
@@ -339,7 +339,7 @@ void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int compareTo
         char rem[2] = {};   // Get the remainder in a string, important to be able to use BigInt_to_string() function
         BigInt_to_string(remainder, rem, 2); // Convert the remainder (as BigInt) to a string (to modify the octalArray)
         
-        octalArrayReturn[index] = rem[0];
+        octalArray[index] = rem[0];
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
 
@@ -350,34 +350,33 @@ void decimalToOctal(BigInt* decimalNumber, char *octalArrayReturn, int compareTo
 
     if (compareToZero < 0){ // Handle negative input
         // Make the last character negative sign, remember! the string will be printed in reverse
-        octalArrayReturn[index] = '-'; 
+        octalArray[index] = '-'; 
     }
 }
 
 
 /** A function to convert an array of hex characters to decimal */
-BigInt* hexToDecimal(char* hex, int compareToZero){
+BigInt* hexToDecimal(char* hexArray, int compareToZero){
 
     BigInt* decimalBig = BigInt_construct(0); // Initializing BigInt is very important
     if (!compareToZero) return decimalBig; // Handle '0' input
     BigInt* base = BigInt_construct(16);
-    int indx = strlen(hex) - 1; long long power = 0; // Power of base 16
+    int indx = strlen(hexArray) - 1; long long power = 0; // Power of base 16
 
     for (indx, power; indx > -1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
 
-        if (hex[indx] == '0' || hex[indx] == '-') continue;
+        if (hexArray[indx] == '0' || hexArray[indx] == '-') continue;
         BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first oprand in the multiplication process is set to the power result (8^sth)
         int multiplicationOperand2 = -1; // Initialize the variable to a negative value for better debugging
             // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to conver from ASCII to int)
                 // and if it's a character, convert it to an integer 
-        if ('0' <= hex[indx] && hex[indx] <= '9')  multiplicationOperand2 = hex[indx] - '0';
-        else if ('a' <= hex[indx] && hex[indx] <= 'f')  multiplicationOperand2 = hex[indx] - 'a' + 10; // Lowercase must be checked first
-        else if ('A' <= hex[indx] && hex[indx] <= 'F')  multiplicationOperand2 = hex[indx] - 'A' + 10;        
+        if ('0' <= hexArray[indx] && hexArray[indx] <= '9')  multiplicationOperand2 = hexArray[indx] - '0';
+        else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  multiplicationOperand2 = hexArray[indx] - 'a' + 10; // Lowercase must be checked first
+        else if ('A' <= hexArray[indx] && hexArray[indx] <= 'F')  multiplicationOperand2 = hexArray[indx] - 'A' + 10;        
         BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2);    
         BigInt_add(decimalBig, multiplicationOperand1);
     }
-
     BigInt_free(base);
     if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
@@ -615,8 +614,8 @@ int main(){
 
         if (chosenSystem == 5){ // Handle exiting the program.
             tryAgain('n'); 
-            // This should pass 'n' to tryAgain function which will display the closing display.
-            break; // Break from the loop (i.e return 0 to system and end the program).
+            // This should pass 'n' to tryAgain function which will display the closing message.
+            break; // Break from the loop (i.e close the program).
         }
 
         getInputNumberAndConvert(chosenSystem);
@@ -628,6 +627,6 @@ int main(){
         response = getCharResponse(); 
 
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).
-
+    getchar();
   return 0;
 }
