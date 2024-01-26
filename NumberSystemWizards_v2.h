@@ -1,5 +1,3 @@
-
-
 //A function to print a yellow smiley face and welcome the user with his name
 void initWelcomeScreen();
 

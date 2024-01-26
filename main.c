@@ -1,5 +1,6 @@
 #include "NumberSystemWizards_v2.c"
 
+/* This is a number system converter supports converting from and to (bin, oct, dec, hex) */
 int main(){
     COLOR_INIT
     char response;  // To store user choice whether to leave the program or to try again.

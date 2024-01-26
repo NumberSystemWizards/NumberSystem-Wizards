@@ -113,12 +113,14 @@ int getChosenSystem(){
         numOfFlushes = 0; 
         //Check if there was additional unintended input 
             //(counts how many times a character has been removed from the input stream)
-        do{
-            COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            numOfScannedVariables = scanf("%d", &chosenSystem);
-            numOfFlushes = flushBufferReturnCounter();
-        }while(validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes));
-        return chosenSystem;
+    
+        COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
+        numOfScannedVariables = scanf("%d", &chosenSystem);
+        numOfFlushes = flushBufferReturnCounter();
+        if (validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes)){
+            return chosenSystem;
+        }
+        else return getChosenSystem();
 }
 
 
@@ -136,16 +138,16 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
         COLOR_RED
         printf("\aPlease enter a valid integer number!\n");
         COLOR_RESET
-        return true;
+        return false;
     }
     else if (1 > chosenSystem || chosenSystem > 5){
         // If the user entered a number that is out of range [1-5]
         COLOR_RED
         printf("\aPlease enter a number from the list [1,2,3,4,5]\n");
         COLOR_RESET
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 
@@ -156,12 +158,12 @@ void getInputNumberAndConvert(int chosenSystem){
     COLOR_YELLOW
         printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
         COLOR_RESET
-        int sizeOfArrays = 512; //! Change in "scanf()" as well
+        int sizeOfArrays = 1024; //! Change in "scanf()" as well
         char inputNumber[sizeOfArrays]; // Array to store user input
         // Get user input number and validate the input based on the system user chose
         do{
             COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%511s", &inputNumber);  //! Change the number based on the size of the array
+            scanf("%1024s", &inputNumber);  //! Change the number based on the size of the array
             numOfFlushes = flushBufferReturnCounter();
         }while(validateInputNumber(inputNumber, numOfFlushes, chosenSystem));
         
@@ -220,7 +222,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
 
     int indx = 0; // Index to iterate over the array
     switch (chosenSystem){
-        case 1: 
+        case 1: // Check Binary system, only 0's and 1's
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx]; // The current char in the iteration. 
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -233,7 +235,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
                 }
             }
             break;
-        case 2: 
+        case 2: // Check Binary system, only numbers from 0 to 7
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx];
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -687,10 +689,10 @@ void displayClosingMessage() {
 //Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
 bool flushBufferReturnCounter(){
     char dummyChar; // Create a dummy character to consume the buffer 
-    int numOfFlushes = 0; // Count how many characters consumed
+    int numOfFlushes = false; // Count how many characters consumed
     // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
     while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
-        if (dummyChar != ' ') numOfFlushes = 1; 
+        if (dummyChar != ' ') numOfFlushes = true; // The flush process encountered some characters which were not white space
     }
     return numOfFlushes;
 }
