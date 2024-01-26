@@ -16,7 +16,7 @@ int getChosenSystem();
     * 1- The system that the user chose is actually valid i.e from [1 - 4] or 5 to exit the program
     * 2- If the user unintentionally entered a character, string, float, or any other type
     * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
-    * 1 indecates the input is not valid and continue the while loop and get the input again
+    * 1 indicates the input is not valid and continue the while loop and get the input again
     */
 bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOfFlushes);
 
@@ -89,6 +89,22 @@ void decimalConversions(BigInt* inputNumber, char* binaryArray, char* octalArray
 
 // To convert and print the conversions if the user entered a hexadecimal number
 void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int compareToZero);
+
+
+//============================================================================
+//! Printing functions
+//============================================================================
+
+void printBinary(char* binaryArray);
+
+// To print the octal number formatted
+void printOctal(char* octalArray);
+
+// To print the decimal number formatted
+void printDecimal(BigInt* decimalInput);
+
+// To print the Hex number formatted
+void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters);
 
 
 //============================================================================

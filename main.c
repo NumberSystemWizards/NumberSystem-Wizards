@@ -7,6 +7,7 @@ int main(){
 
     do {
         response = 0;
+        conversionList(); // Calling the conversion list only each time the program starts over
         int chosenSystem = getChosenSystem(); // Get and validate the chosen input system
 
         if (chosenSystem == 5){ // Handle exiting the program.
@@ -17,10 +18,7 @@ int main(){
 
         getInputNumberAndConvert(chosenSystem); // Get the input number from the user, validate it, and print its conversions
 
-        COLOR_BLUE printf( "\n<------------------------------------------------------>\n"
-                            "<------------------------------------------------------>\n"); COLOR_RESET
-        
-        printf("If you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n");
+        printf("\nIf you want to try again, enter (Y/y).\nIf you want to end the program, enter (N/n).\n");
         response = getCharResponse(); // Get the response of the previous question
 
     }while(tryAgain(response)); // Loop the program again until the user enter (N,n).

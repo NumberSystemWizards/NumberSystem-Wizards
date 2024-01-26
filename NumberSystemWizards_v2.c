@@ -105,7 +105,6 @@ void conversionList(){
 // To get the chosen system from the list
 int getChosenSystem(){
     COLOR_INIT
-    conversionList(); // Calling the conversion list only each time the program starts over
         int chosenSystem = 0, 
         //The actual system the user chose
         numOfScannedVariables = 0, 
@@ -127,7 +126,7 @@ int getChosenSystem(){
     * 1- The system that the user chose is actually valid i.e from [1 - 4] or 5 to exit the program
     * 2- If the user unintentionally entered a character, string, float, or any other type
     * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
-    * 1 indecates the input is not valid and continue the while loop and get the input again
+    * 1 indicates the input is not valid and continue the while loop and get the input again
     */
 bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
 
@@ -162,7 +161,7 @@ void getInputNumberAndConvert(int chosenSystem){
         // Get user input number and validate the input based on the system user chose
         do{
             COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%511s", &inputNumber);
+            scanf("%511s", &inputNumber);  //! Change the number based on the size of the array
             numOfFlushes = flushBufferReturnCounter();
         }while(validateInputNumber(inputNumber, numOfFlushes, chosenSystem));
         
@@ -337,7 +336,7 @@ void decimalToBinary(BigInt* decimalNumber, char *binaryArray, int compareToZero
     BigInt* divisor = BigInt_construct(2);
     BigInt* remainder = BigInt_construct(1);
     // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
-    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
+    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); // Maximum number of digits clones is 512 digit
     long long index = 0; 
 
     do{
@@ -395,7 +394,7 @@ void decimalToOctal(BigInt* decimalNumber, char *octalArray, int compareToZero){
     BigInt* divisor = BigInt_construct(8);
     BigInt* remainder = BigInt_construct(1);
     // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
-    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
+    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); // Maximum number of digits clones is 512 digit
     long long index = 0;  // Keep track of the current index of the hexArray
 
     do{
@@ -437,7 +436,7 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero){
             // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to convert from ASCII to int)
                 // and if it's a character, convert it to an integer 
         if ('0' <= hexArray[indx] && hexArray[indx] <= '9')  multiplicationOperand2 = hexArray[indx] - '0';
-        else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  multiplicationOperand2 = hexArray[indx] - 'a' + 10; // Lowercase must be checked first
+        else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  multiplicationOperand2 = hexArray[indx] - 'a' + 10;
         else if ('A' <= hexArray[indx] && hexArray[indx] <= 'F')  multiplicationOperand2 = hexArray[indx] - 'A' + 10;        
         BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2);    
         BigInt_add(decimalBig, multiplicationOperand1);
@@ -449,7 +448,9 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero){
 
 
 /**A function to convert a BigInt decimal number to hex number
- * Assign the first digit in the hex array to '-' sign only if the number is negative*/
+ * Assign the first digit in the hex array to '-' sign only if the number is negative
+ * Returns true if there's characters in the hex number to tell the printing function to print upper and lower case
+ * If there're no characters return true, then only one version of the number will be printed*/
 bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLower, int compareToZero){ 
     
     bool haveCharacters = false; // If there's no characters in the hex numbers, print only the lowercase, as the uppercase would be identical
@@ -462,7 +463,7 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
     BigInt* divisor = BigInt_construct(16);
     BigInt* remainder = BigInt_construct(0);
     // Make a clone of the bigInt so when modifying it, it doesn't affect the original number
-    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); 
+    BigInt* decimalNumberClone = BigInt_clone(decimalNumber, 512); // Maximum number of digits clones is 512 digit
     long long index = 0;  // Keep track of the current index of the hexArray
 
     do{
@@ -500,46 +501,124 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
 
 
 //============================================================================
-//! Printing functions
+//! Conversion functions
 //============================================================================
-
 
 // To convert and print the conversions if the user entered a binary number
 void binaryConversions(char* inputNumber, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
+    COLOR_INIT
     BigInt* decimalInput = binaryToDecimal(inputNumber, compareToZero);
-    printf("decimal: "); BigInt_print(decimalInput);
     decimalToOctal(decimalInput, octalArray, compareToZero);
     bool haveCharacters = decimalToHex(decimalInput, hexArrayU, hexArrayL, compareToZero);
-    printf("\n\noct: %s\nhexU: %s\n", strrev(octalArray), strrev(hexArrayU));
-    if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
+    // Printing the other 3 systems: oct, dec, hex:
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+    printDecimal(decimalInput);
+    printOctal(octalArray);
+    printHex(hexArrayU, hexArrayL, haveCharacters);
 }
 
 // To convert and print the conversions if the user entered an octal number
 void octalConversions(char* inputNumber, char* binaryArray, char* hexArrayU, char* hexArrayL, int compareToZero){
+    COLOR_INIT
     BigInt* decimalInput = octalToDecimal(inputNumber, compareToZero);
-    printf("decimal: "); BigInt_print(decimalInput);
     decimalToBinary(decimalInput, binaryArray, compareToZero);
     bool haveCharacters = decimalToHex(decimalInput, hexArrayU, hexArrayL, compareToZero);
-    printf("\n\nbin: %s\nhexU: %s\n", strrev(binaryArray), strrev(hexArrayU));
-    if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));  
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+    printBinary(binaryArray);
+    printDecimal(decimalInput);
+    printHex(hexArrayU, hexArrayL, haveCharacters);
 }
 
 // To convert and print the conversions if the user entered a decimal number
 void decimalConversions(BigInt* inputNumber, char* binaryArray, char* octalArray, char* hexArrayU, char* hexArrayL, int compareToZero){
+    COLOR_INIT
     decimalToBinary(inputNumber, binaryArray, compareToZero);
     decimalToOctal(inputNumber, octalArray, compareToZero);
     bool haveCharacters = decimalToHex(inputNumber, hexArrayU, hexArrayL, compareToZero);    
-    printf("\n\nbin: %s\noct: %s\nhexU: %s\n", strrev(binaryArray), strrev(octalArray), strrev(hexArrayU));
-    if (haveCharacters) printf("hexL: %s", strrev(hexArrayL));
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+    printBinary(binaryArray);
+    printOctal(octalArray);
+    printHex(hexArrayU, hexArrayL, haveCharacters);
 }
 
 // To convert and print the conversions if the user entered a hexadecimal number
 void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int compareToZero){
+    COLOR_INIT
     BigInt* decimalInput = hexToDecimal(inputNumber, compareToZero);
     decimalToBinary(decimalInput, binaryArray, compareToZero);
     decimalToOctal(decimalInput, octalArray, compareToZero);
-    printf("\n\nbin: %s\noct: %s\ndec: ", strrev(binaryArray), strrev(octalArray));
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+    printBinary(binaryArray);
+    printOctal(octalArray);
+    printDecimal(decimalInput);
+}
+
+
+//============================================================================
+//! Printing functions
+//============================================================================
+
+// To print the binary number formatted
+void printBinary(char* binaryArray){
+    COLOR_INIT
+    printf("\nBinary = "); 
+    COLOR_YELLOW
+    printf("%s\n", strrev(binaryArray)); 
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+}
+
+// To print the octal number formatted
+void printOctal(char* octalArray){
+    COLOR_INIT
+    printf("\nOctal = "); 
+    COLOR_YELLOW
+    printf("%s\n", strrev(octalArray)); 
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
+}
+
+// To print the decimal number formatted
+void printDecimal(BigInt* decimalInput){
+    COLOR_INIT
+    printf("\nDecimal = "); 
+    COLOR_YELLOW
     BigInt_print(decimalInput);
+    COLOR_BLUE
+    printf("\n\n-----------------------------------\n");
+    COLOR_RESET
+}
+
+// To print the Hex number formatted
+void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters){
+    COLOR_INIT
+    if (!haveCharacters){
+        printf("\nHexadecimal = "); 
+        COLOR_YELLOW
+        printf("%s\n", strrev(hexArrayU)); // Any of the hex arrays will work, it doesn't matter
+    }
+    else{
+        printf("\nHexadecimal Upper = "); 
+        COLOR_YELLOW
+        printf("%s\n", strrev(hexArrayU));
+        COLOR_RESET
+        printf("----\nHexadecimal Lower = "); 
+        COLOR_YELLOW
+        printf("%s\n", strrev(hexArrayL));
+    }
+    COLOR_BLUE
+    printf("\n-----------------------------------\n");
+    COLOR_RESET
 }
 
 
