@@ -38,8 +38,8 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
 
 
 /**A function that raises a BigInt to a power (long long), by repeatedly multiplying the BigInt by itself.
- * Accepts The BigInt and the exponenet.
- * The function returns a BigInt, the result of base^exponenet (^ donates power not XOR)
+ * Accepts The BigInt and the exponent.
+ * The function returns a BigInt, the result of base^exponent (^ donates power not XOR)
 */
 BigInt* BigInt_pow(BigInt* base, long long int exponent);
 
