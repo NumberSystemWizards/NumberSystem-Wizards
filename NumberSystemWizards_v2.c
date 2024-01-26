@@ -20,7 +20,7 @@
 #define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
 
 
-/*Global Decleration*/
+/*Global Declaration*/
 //Initialize the indexes of the system to be used in the code
 char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"};
 
@@ -63,20 +63,20 @@ void initWelcomeScreen(){
     //Taking the user name from the user.
     gets(userName);
     COLOR_YELLOW
-    //Printing a line depending on the username length to fit the messege.
+    //Printing a line depending on the username length to fit the message.
     printf("\n\n<");
     for(int i=0;i<50+strlen(userName);i++){
         printf("-");
     }
     printf(">\n");
 
-    //Printing the Welcome messege.
+    //Printing the Welcome message.
     printf("^ Welcome"); 
     COLOR_PURPLE printf(" %s ", userName); COLOR_YELLOW
     printf("To Our NumberSystem Converter Machine:) ^\n");
     printf("<");
 
-    //Printing a line depending on the username length to fit the messege.
+    //Printing a line depending on the username length to fit the message.
     for(int i=0;i<50+strlen(userName);i++){
         printf("-");
     }
