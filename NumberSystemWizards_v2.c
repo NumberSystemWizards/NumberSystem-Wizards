@@ -7,7 +7,7 @@
 #include <windows.h>    // To change text color in console
 
 #include "BigInt.c"     // BigInt Library
-#include "NumberSystemWizards_v2.h"
+#include "NumberSystemWizards_v2.h" // Functions prototypes 
 
 // Macros to reset &change text colors: (instead or writing it multiple times)
   // Initiate handle for console, must be in every function uses color changing feature.
@@ -25,7 +25,7 @@ char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"};
 
 
 //A function to print a yellow smiley face and welcome the user with his name
-void initWelcomeScreen(){
+void WelcomeScreen(){
     COLOR_INIT
     char userName[100];
 

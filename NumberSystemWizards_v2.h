@@ -1,5 +1,5 @@
 //A function to print a yellow smiley face and welcome the user with his name
-void initWelcomeScreen();
+void WelcomeScreen();
 
 
 //A function to print the options list.

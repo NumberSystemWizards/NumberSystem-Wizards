@@ -3,7 +3,7 @@
 /* This is a number system converter supports converting from and to (bin, oct, dec, hex) */
 int main(){
     COLOR_INIT
-    initWelcomeScreen(); // Display welcome screen and get the user name
+    WelcomeScreen(); // Display welcome screen and get the user name
     bool flag = 1;
     do{
         int chosenSystem = beginningFunction(); // begin program and print the conversion list for the user to choose from
