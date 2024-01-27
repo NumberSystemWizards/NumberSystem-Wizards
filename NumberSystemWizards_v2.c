@@ -150,7 +150,9 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
 }
 
 
-#define sizeOfArrays 1024 // To define the size of the array instead of using a variable
+// To define the size of the array instead of using a variable
+#define sizeOfArrays 1024 
+
 // A function to scan, validate, convert, and print the converted number
 void getInputNumberAndConvert(int chosenSystem){
     COLOR_INIT
@@ -158,19 +160,19 @@ void getInputNumberAndConvert(int chosenSystem){
     COLOR_YELLOW
         printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
         COLOR_RESET
-        char inputNumber[sizeOfArrays]; // Array to store user input
+        char inputNumber[sizeOfArrays] = {0}; // Array to store user input
         // Get user input number and validate the input based on the system user chose
         do{
             COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%1024s", &inputNumber);  //! Change the number based on the size of the array
+            scanf("%1023s", &inputNumber);  //! Change the number based on the size of the array
             numOfFlushes = flushBufferReturnCounter();
         }while(validateInputNumber(inputNumber, numOfFlushes, chosenSystem));
         
-        // Initialize containers for the result of the conversions
-        char binaryArray[sizeOfArrays];
-        char octalArray[sizeOfArrays];
-        char hexArrayU[sizeOfArrays];
-        char hexArrayL[sizeOfArrays];
+        // Initialize containers for the result of the conversions (very important to avoid garbage value)
+        char binaryArray[sizeOfArrays] = {0};
+        char octalArray[sizeOfArrays] = {0};
+        char hexArrayU[sizeOfArrays] = {0};
+        char hexArrayL[sizeOfArrays] = {0};
         int compareToZero = 1; // Initialize the compare variable to determine whether the input number is zero, positive or negative
         
         BigInt* decimalInput = BigInt_construct(0); // Initialize a number variable to store decimal conversions
@@ -234,7 +236,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
                 }
             }
             break;
-        case 2: // Check Binary system, only numbers from 0 to 7
+        case 2: // Check Octal system, only numbers from 0 to 7
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx];
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -247,7 +249,7 @@ bool validateInputNumber(char *inputNumberArray, int numOfFlushes, int chosenSys
                 }
             }
             break;
-        case 3: 
+        case 3: // Check Decimal system, only digits
             for(indx; indx < arrayLength; ++indx){  
                 char currentChar = inputNumberArray[indx];
                 if (indx == 0 && currentChar == '-' && 1 < arrayLength) continue; // Check if there's a negative sign only in the start of the array
@@ -600,7 +602,7 @@ void printDecimal(BigInt* decimalInput){
     COLOR_RESET
 }
 
-// To print the Hex number formatted
+// To print the Hex number formatted, uppercase or upper and lowercase
 void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters){
     COLOR_INIT
     if (!haveCharacters){
@@ -629,7 +631,17 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters){
 
 
 
-/*A function to get the input character from the user (y,n). 
+//prints list and take the chosenSystem. and return the chosenSystem.
+//Implemented here to free some space in main.
+int beginningFunction( void ) {
+
+    conversionList(); // Calling the conversion list only each time the program starts over
+    int chosenSystem = getChosenSystem(); // Get and validate the chosen input system
+    return chosenSystem;
+}
+
+
+/*A function to get the input character from the user (y,n,r). 
     Implemented here to free some space in main*/
 char getCharResponse(){
     char response = 0; // To store the response of the user about leaving the program
@@ -642,12 +654,15 @@ char getCharResponse(){
 }
 
 
-// Check the response of tryAgain() function
+// Check the response of optionList() function
 bool checkResponse(int numOfFlushes, char response){
     COLOR_INIT // Initiate the color changing 
-    if (((response != 'y' && response != 'Y') && (response != 'n' && response != 'N')) || numOfFlushes != 0){
+    if (((response != 'r' && response != 'R') && 
+         (response != 'y' && response != 'Y') && 
+         (response != 'n' && response != 'N')) || 
+         numOfFlushes != 0){
         COLOR_RED
-        printf("\aInvalid input. Please try again and enter Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
+        printf("\aInvalid input. Please try again and enter R/r OR Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
         COLOR_RESET
         return true;
     }
@@ -655,16 +670,48 @@ bool checkResponse(int numOfFlushes, char response){
 }
 
 
-/*A function to determine whether to exit the program or to start again based on user choice*/
-bool tryAgain(char response){
-    if (response == 'n' || response == 'N'){ 
-        displayClosingMessage(); // If the user entered (N,n), Then display the message and exit the program.
-        return false;
+
+
+//Implemented here to free some space in main.
+char optionList (int chosenSystem){
+    char response = 0;  // To store user choice whether to leave the program or to try again.
+     printf("\nIf you want to Return Back to the list , enter (R/r)."
+            "\nIf you want to try another %s number , enter (Y/y)"
+            "\nIf you want to end the program, enter (N/n).\n", systemIndexes[chosenSystem]);
+        response = getCharResponse(); // Get the response of the previous question and validates it.
+    return response;
+}
+
+
+//Implemented here to free some space in main.
+int getMakeSure (){
+    COLOR_INIT
+    int makeSure = 0;    
+    int numOfFlushes = 0;
+    COLOR_BLUE
+        printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n");
+        COLOR_YELLOW
+        printf("Enter here: ");
+    COLOR_RESET
+    do{
+        scanf("%d", &makeSure);
+        numOfFlushes = flushBufferReturnCounter(); // Read the buffer, if not zero, the user entered more than one character.
+    }while(checkMakeSure ( makeSure, numOfFlushes ));
+    return makeSure;
+}
+
+
+//Implemented here to free some space in main.
+bool checkMakeSure ( int makeSure, int numOfFlushes){
+    COLOR_INIT // Initiate the color changing functions
+    if((makeSure != 1 && makeSure != 2) || (numOfFlushes != 0)){
+    COLOR_RED
+    printf("\aInvalid input. Please try again and enter 1 Or 2 ");
+    COLOR_YELLOW printf("\nEnter here: ");
+    COLOR_RESET
+    return true;
     }
-    else{
-        system("cls"); // To clear the screen and try again.
-        return true;
-    }
+  return false;
 }
 
 

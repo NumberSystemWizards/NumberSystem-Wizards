@@ -67,7 +67,8 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero);
 
 /**A function to convert a BigInt decimal number to hex number
  * Assign the first digit in the hex array to '-' sign only if the number is negative
- * Returns true if there was characters in the final hex number, false if there wasn't*/
+ * Returns true if there was characters in the final hex number, false if there wasn't
+ */
 bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLower, int compareToZero);
 
 
@@ -93,6 +94,7 @@ void hexConversions(char* inputNumber, char* binaryArray, char* octalArray, int 
 //! Printing functions
 //============================================================================
 
+// To print the binary number formatted
 void printBinary(char* binaryArray);
 
 // To print the octal number formatted
@@ -101,7 +103,7 @@ void printOctal(char* octalArray);
 // To print the decimal number formatted
 void printDecimal(BigInt* decimalInput);
 
-// To print the Hex number formatted
+// To print the Hex number formatted, uppercase or upper and lowercase
 void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters);
 
 
@@ -110,18 +112,31 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters);
 //============================================================================
 
 
+//prints list and take the chosenSystem. and return the chosenSystem.
+//Implemented here to free some space in main.
+int beginningFunction( void );
+
 
 /*A function to get the input character from the user (y,n). 
     Implemented here to free some space in main*/
 char getCharResponse();
 
 
-// Check the response of tryAgain() function
+// Check the response of optionList() function
 bool checkResponse(int numOfFlushes, char response);
 
+// A function prints options to user. 
+//calls getCharResponse which calls check response
+//returns the response.'n' or 'y' or 'r'
+char optionList (int chosenSystem);
 
-/*A function to determine whether to exit the program or to start again based on user choice*/
-bool tryAgain(char response);
+
+//A function to get the input integer from the user (1,2).
+// just to make sure he chose the right system
+int getMakeSure ();
+
+// Check the makeSure of the get makeSure function.
+bool checkMakeSure ( int makeSure,int numOfFlushes);
 
 
 /*A function to print the closing screen.*/
