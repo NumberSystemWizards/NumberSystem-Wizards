@@ -7,9 +7,8 @@ int main(){
     bool flag = 1;
     do{
         int chosenSystem = beginningFunction(); // begin program and print the conversion list for the user to choose from
-        int makeSure = 0; // To make sure he chose the system right.
 
-        makeSure = getMakeSure();
+        int makeSure = getMakeSure(); // To make sure he chose the desired system.
         // 1 means the user meant to choose that system.
         // 2 means the user want to change what he chose.
         
