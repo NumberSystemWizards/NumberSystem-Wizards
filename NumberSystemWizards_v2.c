@@ -19,7 +19,6 @@
 #define COLOR_YELLOW    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN|FOREGROUND_RED);
 #define COLOR_PURPLE    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_RED);
 
-
 /*Global Declaration*/
 //Initialize the indexes of the system to be used in the code
 char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"};
@@ -151,6 +150,7 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
 }
 
 
+#define sizeOfArrays 1024 // To define the size of the array instead of using a variable
 // A function to scan, validate, convert, and print the converted number
 void getInputNumberAndConvert(int chosenSystem){
     COLOR_INIT
@@ -158,7 +158,6 @@ void getInputNumberAndConvert(int chosenSystem){
     COLOR_YELLOW
         printf("\t\tPlease Enter the %s number to be converted.\n", systemIndexes[chosenSystem]);
         COLOR_RESET
-        int sizeOfArrays = 1024; //! Change in "scanf()" as well
         char inputNumber[sizeOfArrays]; // Array to store user input
         // Get user input number and validate the input based on the system user chose
         do{
