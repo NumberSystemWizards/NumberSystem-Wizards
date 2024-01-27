@@ -30,6 +30,8 @@ This C program is a number system converter that allows users to convert between
   
 - **Support for converting big numbers**
 
+- **Support for printing Hexadecimal numbers in uppercase and lowercase**
+
 ## Downsides
 
 - **No Support for fraction conversions:**
