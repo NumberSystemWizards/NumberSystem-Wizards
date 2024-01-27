@@ -24,6 +24,11 @@
 char *systemIndexes[5] = {"", "Binary", "Octal", "Decimal", "Hexadecimal"};
 
 
+//============================================================================
+//! Welcome and Validation functions
+//============================================================================
+
+
 //A function to print a yellow smiley face and welcome the user with his name
 void WelcomeScreen(){
     COLOR_INIT
@@ -81,6 +86,16 @@ void WelcomeScreen(){
     }
     printf(">\n\n");
     COLOR_RESET
+}
+
+
+//prints list and take the chosenSystem. and return the chosenSystem.
+//Implemented here to free some space in main.
+int beginningFunction( void ) {
+
+    conversionList(); // Calling the conversion list only each time the program starts over
+    int chosenSystem = getChosenSystem(); // Get and validate the chosen input system
+    return chosenSystem;
 }
 
 
@@ -630,17 +645,6 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters){
 //============================================================================
 
 
-
-//prints list and take the chosenSystem. and return the chosenSystem.
-//Implemented here to free some space in main.
-int beginningFunction( void ) {
-
-    conversionList(); // Calling the conversion list only each time the program starts over
-    int chosenSystem = getChosenSystem(); // Get and validate the chosen input system
-    return chosenSystem;
-}
-
-
 /*A function to get the input character from the user (y,n,r). 
     Implemented here to free some space in main*/
 char getCharResponse(){
@@ -654,7 +658,6 @@ char getCharResponse(){
     } while (checkResponse(numOfFlushes, response));
     return response;
 }
-
 
 // Check the response of optionList() function
 bool checkResponse(int numOfFlushes, char response){
@@ -671,9 +674,6 @@ bool checkResponse(int numOfFlushes, char response){
     return false;
 }
 
-
-
-
 //Implemented here to free some space in main.
 char optionList (int chosenSystem){
     char response = 0;  // To store user choice whether to leave the program or to try again.
@@ -683,7 +683,6 @@ char optionList (int chosenSystem){
         response = getCharResponse(); // Get the response of the previous question and validates it.
     return response;
 }
-
 
 //Implemented here to free some space in main.
 int getMakeSure (){
@@ -702,7 +701,6 @@ int getMakeSure (){
     return makeSure;
 }
 
-
 //Implemented here to free some space in main.
 bool checkMakeSure ( int makeSure, int numOfFlushes){
     COLOR_INIT // Initiate the color changing functions
@@ -715,7 +713,6 @@ bool checkMakeSure ( int makeSure, int numOfFlushes){
     }
   return false;
 }
-
 
 /*A function to print the closing screen.*/
 void displayClosingMessage() {
