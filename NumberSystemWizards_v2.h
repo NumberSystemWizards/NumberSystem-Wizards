@@ -1,14 +1,19 @@
+//============================================================================
+//! Welcome and Validation functions
+//============================================================================
+
 //A function to print a yellow smiley face and welcome the user with his name
 void WelcomeScreen();
 
+//prints list and take the chosenSystem. and return the chosenSystem.
+//Implemented here to free some space in main.
+int beginningFunction( void );
 
 //A function to print the options list.
 void conversionList();
 
-
 // To get the chosen system from the list
 int getChosenSystem();
-
 
 /*Check if 
     * 1- The system that the user chose is actually valid i.e from [1 - 4] or 5 to exit the program
@@ -18,10 +23,8 @@ int getChosenSystem();
     */
 bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOfFlushes);
 
-
 // A function to scan, validate, convert, and print the converted number
 void getInputNumberAndConvert(int chosenSystem);
-
 
 /** Check The validity of the input number
  * Returns 0 in case of the validation is correct (to exit the do-while loop)
@@ -110,11 +113,6 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters);
 //============================================================================
 //! Try again section
 //============================================================================
-
-
-//prints list and take the chosenSystem. and return the chosenSystem.
-//Implemented here to free some space in main.
-int beginningFunction( void );
 
 
 /*A function to get the input character from the user (y,n). 
