@@ -644,9 +644,11 @@ int beginningFunction( void ) {
 /*A function to get the input character from the user (y,n,r). 
     Implemented here to free some space in main*/
 char getCharResponse(){
+    COLOR_INIT
     char response = 0; // To store the response of the user about leaving the program
     int numOfFlushes = 0;
     do {
+        COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
         scanf(" %c", &response);
         numOfFlushes = flushBufferReturnCounter(); // Read the buffer, if not zero, the user entered more than one character.
     } while (checkResponse(numOfFlushes, response));
@@ -689,7 +691,7 @@ int getMakeSure (){
     int makeSure = 0;    
     int numOfFlushes = 0;
     COLOR_BLUE
-        printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n");
+        printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n\n");
         COLOR_YELLOW
         printf("Enter here: ");
     COLOR_RESET
