@@ -116,7 +116,7 @@ void conversionList(){
 }
 
 
-// To get the chosen system from the list
+// To get the chosen system from the list using recursion
 int getChosenSystem(){
     COLOR_INIT
         int chosenSystem = 0, 
@@ -131,18 +131,19 @@ int getChosenSystem(){
         COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
         numOfScannedVariables = scanf("%d", &chosenSystem);
         numOfFlushes = flushBufferReturnCounter();
-        if (validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes)){
+        if (validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes)){ 
+            // Base case (the number is correct)
             return chosenSystem;
         }
-        else return getChosenSystem();
+        else return getChosenSystem(); // Recursive case (calls itself until the user enter a valid number)
 }
 
 
 /*Check if 
     * 1- The system that the user chose is actually valid i.e from [1 - 4] or 5 to exit the program
     * 2- If the user unintentionally entered a character, string, float, or any other type
-    * return a boolean expression (0,1) where 0 indicates the input is valid and terminate the while loop
-    * 1 indicates the input is not valid and continue the while loop and get the input again
+    * return a boolean expression, where false indicates the input is valid and terminate the while loop
+    * true indicates the input is not valid and continue the while loop and get the input again
     */
 bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOfFlushes){
 
@@ -166,7 +167,7 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
 
 
 // To define the size of the array instead of using a variable
-#define sizeOfArrays 1024 
+#define sizeOfArrays 512 
 
 // A function to scan, validate, convert, and print the converted number
 void getInputNumberAndConvert(int chosenSystem){
@@ -179,7 +180,7 @@ void getInputNumberAndConvert(int chosenSystem){
         // Get user input number and validate the input based on the system user chose
         do{
             COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
-            scanf("%1023s", &inputNumber);  //! Change the number based on the size of the array
+            scanf("%511s", &inputNumber);  //! Change the number based on the size of the array
             numOfFlushes = flushBufferReturnCounter();
         }while(validateInputNumber(inputNumber, numOfFlushes, chosenSystem));
         
@@ -731,11 +732,12 @@ void displayClosingMessage() {
 }
 
 
-//Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
+//Removes unwanted characters from the input stream, return true if there was characters in the buffer, false if not
 bool flushBufferReturnCounter(){
     char dummyChar; // Create a dummy character to consume the buffer 
     int numOfFlushes = false; // Count how many characters consumed
-    // Create a loop to repeatedly exit the loop when newline or endOfLine is encountered
+    // Create a loop to repeatedly consume the characters in input stream buffer
+        // exit the loop when newline or endOfLine is encountered
     while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
         if (dummyChar != ' ') numOfFlushes = true; // The flush process encountered some characters which were not white space
     }
