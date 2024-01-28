@@ -468,7 +468,7 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero){
 /**A function to convert a BigInt decimal number to hex number
  * Assign the first digit in the hex array to '-' sign only if the number is negative
  * Returns true if there's characters in the hex number to tell the printing function to print upper and lower case
- * If there're no characters return true, then only one version of the number will be printed*/
+ * If there're no characters return false, then only one version of the number will be printed*/
 bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLower, int compareToZero){ 
     
     bool haveCharacters = false; // If there's no characters in the hex numbers, print only the lowercase, as the uppercase would be identical
@@ -664,7 +664,7 @@ bool checkResponse(int numOfFlushes, char response){
     COLOR_INIT // Initiate the color changing 
     if (((response != 'r' && response != 'R') && 
          (response != 'y' && response != 'Y') && 
-         (response != 'n' && response != 'N')) || 
+         (response != 'n' && response != 'N')) ||   
          numOfFlushes != 0){
         COLOR_RED
         printf("\aInvalid input. Please try again and enter R/r OR Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");

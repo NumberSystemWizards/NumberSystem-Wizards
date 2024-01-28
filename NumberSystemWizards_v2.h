@@ -119,27 +119,23 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters);
     Implemented here to free some space in main*/
 char getCharResponse();
 
-
 // Check the response of optionList() function
 bool checkResponse(int numOfFlushes, char response);
 
 // A function prints options to user. 
 //calls getCharResponse which calls check response
 //returns the response.'n' or 'y' or 'r'
-char optionList (int chosenSystem);
-
+char optionList(int chosenSystem);
 
 //A function to get the input integer from the user (1,2).
 // just to make sure he chose the right system
-int getMakeSure ();
+int getMakeSure();
 
 // Check the makeSure of the get makeSure function.
-bool checkMakeSure ( int makeSure,int numOfFlushes);
-
+bool checkMakeSure( int makeSure,int numOfFlushes);
 
 /*A function to print the closing screen.*/
 void displayClosingMessage();
-
 
 //Removes unwanted characters from the input stream, return 1 if there was characters in the buffer, 0 if not
 bool flushBufferReturnCounter();
