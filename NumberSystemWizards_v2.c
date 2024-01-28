@@ -739,7 +739,8 @@ bool flushBufferReturnCounter(){
     // Create a loop to repeatedly consume the characters in input stream buffer
         // exit the loop when newline or endOfLine is encountered
     while((dummyChar = getchar()) != '\n' && dummyChar != EOF){
-        if (dummyChar != ' ') numOfFlushes = true; // The flush process encountered some characters which were not white space
+        // If the flushing process encountered some characters which were not white space
+        if (dummyChar != ' ') numOfFlushes = true; 
     }
     return numOfFlushes;
 }
