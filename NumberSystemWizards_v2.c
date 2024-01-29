@@ -115,7 +115,6 @@ void conversionList(){
     COLOR_RESET
 }
 
-
 // To get the chosen system from the list using recursion
 int getChosenSystem(){
     COLOR_INIT
@@ -123,11 +122,11 @@ int getChosenSystem(){
         //The actual system the user chose
         numOfScannedVariables = 0, 
         //The number of scanned variables 
-            //(return 0 if the above variable wasn't scanned)
+            //(return 0 if the variable wasn't scanned properly)
         numOfFlushes = 0; 
         //Check if there was additional unintended input 
             //(counts how many times a character has been removed from the input stream)
-    
+
         COLOR_YELLOW printf("Enter here:  "); COLOR_RESET
         numOfScannedVariables = scanf("%d", &chosenSystem);
         numOfFlushes = flushBufferReturnCounter();
@@ -163,6 +162,38 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
         return false;
     }
     return true;
+}
+
+
+//Implemented here to free some space in main.
+int getMakeSure() {
+    COLOR_INIT
+    int makeSure = 0;
+    int numOfFlushes = 0;
+
+    COLOR_YELLOW
+    printf("Enter here: ");
+    COLOR_RESET
+
+    scanf("%d", &makeSure);
+    numOfFlushes = flushBufferReturnCounter(); 
+
+    if (checkMakeSure(makeSure, numOfFlushes)) {
+        return getMakeSure();
+    }
+    else return makeSure;
+}
+
+//Implemented here to free some space in main.
+bool checkMakeSure ( int makeSure, int numOfFlushes){
+    COLOR_INIT // Initiate the color changing functions
+    if((makeSure != 1 && makeSure != 2) || (numOfFlushes != 0)){
+    COLOR_RED
+    printf("\aInvalid input. Please try again and enter 1 Or 2!\n");
+    COLOR_RESET
+    return true;
+    }
+  return false;
 }
 
 
@@ -345,7 +376,7 @@ BigInt* binaryToDecimal(char* binaryArray, int compareToZero){
 /**A function to convert a BigInt decimal number to binary number
  * assign the first digit in the binary array to '-' sign only if the number is negative
 */
-void decimalToBinary(BigInt* decimalNumber, char *binaryArray, int compareToZero){ 
+void decimalToBinary(BigInt* decimalNumber, char* binaryArray, int compareToZero){ 
     // Handle Input zero case
     if (!compareToZero){ // i.e exactly == zero
         binaryArray[0] = '0';
@@ -450,15 +481,15 @@ BigInt* hexToDecimal(char* hexArray, int compareToZero){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
 
         if (hexArray[indx] == '0' || hexArray[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
-        int multiplicationOperand2 = -1; // Initialize the variable to a negative value for better debugging
+        BigInt* weight =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
+        int valueOfCharacter = -1; // Initialize the variable to a negative value for better debugging
             // To get the value of the current digit in the hexArray, we check if it's a number (return this value - '0' to convert from ASCII to int)
                 // and if it's a character, convert it to an integer 
-        if ('0' <= hexArray[indx] && hexArray[indx] <= '9')  multiplicationOperand2 = hexArray[indx] - '0';
-        else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  multiplicationOperand2 = hexArray[indx] - 'a' + 10;
-        else if ('A' <= hexArray[indx] && hexArray[indx] <= 'F')  multiplicationOperand2 = hexArray[indx] - 'A' + 10;        
-        BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2);    
-        BigInt_add(decimalBig, multiplicationOperand1);
+        if      ('0' <= hexArray[indx] && hexArray[indx] <= '9')  valueOfCharacter = hexArray[indx] - '0';
+        else if ('a' <= hexArray[indx] && hexArray[indx] <= 'f')  valueOfCharacter = hexArray[indx] - 'a' + 10;
+        else if ('A' <= hexArray[indx] && hexArray[indx] <= 'F')  valueOfCharacter = hexArray[indx] - 'A' + 10;        
+        BigInt_multiply_int(weight, valueOfCharacter);    
+        BigInt_add(decimalBig, weight);
     }
     BigInt_free(base);
     if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
@@ -646,6 +677,16 @@ void printHex(char* hexArrayU, char* hexArrayL, bool haveCharacters){
 //============================================================================
 
 
+//Implemented here to free some space in main.
+char optionList (int chosenSystem){
+    char response = 0;  // To store user choice whether to leave the program or to try again.
+     printf("\nIf you want to Return Back to the list , enter (R/r)."
+            "\nIf you want to try another %s number , enter (Y/y)"
+            "\nIf you want to end the program, enter (N/n).\n", systemIndexes[chosenSystem]);
+        response = getCharResponse(); // Get the response of the previous question and validates it.
+    return response;
+}
+
 /*A function to get the input character from the user (y,n,r). 
     Implemented here to free some space in main*/
 char getCharResponse(){
@@ -668,51 +709,11 @@ bool checkResponse(int numOfFlushes, char response){
          (response != 'n' && response != 'N')) ||   
          numOfFlushes != 0){
         COLOR_RED
-        printf("\aInvalid input. Please try again and enter R/r OR Y/y OR N/n.\n"); COLOR_YELLOW printf("Enter here:  ");
+        printf("\aInvalid input. Please try again and enter R/r OR Y/y OR N/n.\n");
         COLOR_RESET
         return true;
     }
     return false;
-}
-
-//Implemented here to free some space in main.
-char optionList (int chosenSystem){
-    char response = 0;  // To store user choice whether to leave the program or to try again.
-     printf("\nIf you want to Return Back to the list , enter (R/r)."
-            "\nIf you want to try another %s number , enter (Y/y)"
-            "\nIf you want to end the program, enter (N/n).\n", systemIndexes[chosenSystem]);
-        response = getCharResponse(); // Get the response of the previous question and validates it.
-    return response;
-}
-
-//Implemented here to free some space in main.
-int getMakeSure (){
-    COLOR_INIT
-    int makeSure = 0;    
-    int numOfFlushes = 0;
-    COLOR_BLUE
-        printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n\n");
-        COLOR_YELLOW
-        printf("Enter here: ");
-    COLOR_RESET
-    do{
-        scanf("%d", &makeSure);
-        numOfFlushes = flushBufferReturnCounter(); // Read the buffer, if not zero, the user entered more than one character.
-    }while(checkMakeSure ( makeSure, numOfFlushes ));
-    return makeSure;
-}
-
-//Implemented here to free some space in main.
-bool checkMakeSure ( int makeSure, int numOfFlushes){
-    COLOR_INIT // Initiate the color changing functions
-    if((makeSure != 1 && makeSure != 2) || (numOfFlushes != 0)){
-    COLOR_RED
-    printf("\aInvalid input. Please try again and enter 1 Or 2 ");
-    COLOR_YELLOW printf("\nEnter here: ");
-    COLOR_RESET
-    return true;
-    }
-  return false;
 }
 
 /*A function to print the closing screen.*/

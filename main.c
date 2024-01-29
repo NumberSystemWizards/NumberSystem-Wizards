@@ -8,6 +8,9 @@ int main(){
     do{
         int chosenSystem = beginningFunction(); // begin program and print the conversion list for the user to choose from
 
+        COLOR_BLUE
+        printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n\n");
+        COLOR_RESET
         int makeSure = getMakeSure(); // To make sure he chose the desired system.
         // 1 means the user meant to choose that system.
         // 2 means the user want to change what he chose.
