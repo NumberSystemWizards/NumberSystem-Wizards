@@ -132,6 +132,9 @@ int getChosenSystem(){
         numOfFlushes = flushBufferReturnCounter();
         if (validateChosenSystem(chosenSystem, numOfScannedVariables, numOfFlushes)){ 
             // Base case (the number is correct)
+            COLOR_BLUE
+            printf("\nIf you want to proceed press (1).\nIf you want to RETURN BACK to the List press (2).\n\n");
+            COLOR_RESET
             return chosenSystem;
         }
         else return getChosenSystem(); // Recursive case (calls itself until the user enter a valid number)
