@@ -169,7 +169,7 @@ bool validateChosenSystem(int chosenSystem, int numOfScannedVariables, int numOf
 
 
 //Implemented here to free some space in main.
-int getMakeSure() {
+int getMakeSure(){
     COLOR_INIT
     int makeSure = 0;
     int numOfFlushes = 0;
@@ -370,7 +370,7 @@ BigInt* binaryToDecimal(char* binaryArray, int compareToZero){
         if (binaryArray[indx] == '0' || binaryArray[indx] == '-') continue;
         BigInt_add(decimalBig, BigInt_pow(base,power));
     }
-    BigInt_free(base);
+    BigInt_free(base); // Freeing memory is crucial
     if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
     return decimalBig;
 }
@@ -413,6 +413,8 @@ void decimalToBinary(BigInt* decimalNumber, char* binaryArray, int compareToZero
 }
 
 
+
+
 /** A function to convert an array of octal characters to decimal */
 BigInt* octalToDecimal(char* octalArray, int compareToZero){
 
@@ -424,10 +426,10 @@ BigInt* octalToDecimal(char* octalArray, int compareToZero){
     for (indx, power; indx >- 1; --indx, ++power){
         // On each iteration: get the current character, if '0' or '-' (negative sign), move to the previous character (--indx) and increase the power
         if (octalArray[indx] == '0' || octalArray[indx] == '-') continue;
-        BigInt* multiplicationOperand1 =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
-        int multiplicationOperand2 = octalArray[indx]-'0'; // The second operand in the multiplication process is set to the current value in the octal number
-        BigInt_multiply_int(multiplicationOperand1, multiplicationOperand2); 
-        BigInt_add(decimalBig, multiplicationOperand1);
+        BigInt* weight =  BigInt_pow(base,power); // The first operand in the multiplication process is set to the power result (8^sth)
+        int valieOfChar = octalArray[indx]-'0'; // The second operand in the multiplication process is set to the current value in the octal number
+        BigInt_multiply_int(weight, valieOfChar); 
+        BigInt_add(decimalBig, weight);
     }
     BigInt_free(base);
     if (compareToZero < 0) BigInt_multiply_int(decimalBig, -1); // If input is negative, multiply by -1
@@ -521,20 +523,19 @@ bool decimalToHex(BigInt* decimalNumber, char* hexArrayUpper, char* hexArrayLowe
 
     do{
         // Make the division, assign the quotient to decimalNumber, assign the remainder to the remainder variable {neat right?}
-        BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder); 
-        char rem[2] = {}; // Get the remainder in a string, important to use BigInt_to_string() function
-        BigInt_to_string(remainder, rem, 2); //convert the remainder (as BigInt) to a string (to modify the hexArray)
-        int remInt = atoi(rem); // Convert the remainder to an integer
+        BigInt_divide(decimalNumberClone, divisor, decimalNumberClone, remainder);
+        int remInt = 0; // Convert the remainder to an integer to make operations on
+        int *ptrRemInt = &remInt; // Preserve the pointer to the remainder to convert it to integer
+        BigInt_to_int(remainder, ptrRemInt); // parameters : (ptr to BigInt, ptr to integer)
         if (remInt <= 9){
-            hexArrayUpper[index] = rem[0]; // If the remainder is 9 at max, then it's kept as it's in the two hexArrays
-            hexArrayLower[index] = rem[0];
+            hexArrayUpper[index] = remInt + 48; // convert the remainder to a character and store in both arrays
+            hexArrayLower[index] = remInt + 48; 
         } 
         else{
             haveCharacters = true;
             // Getting the corresponding hex value of the remainder [A-F] for upper array
-            hexArrayUpper[index] = remInt + 55; 
-            // And store the same value but lower in the lower array
-            hexArrayLower[index] = hexArrayUpper[index] + ' '; // Add space or 32 in ASCII to convert from upper to lower
+            hexArrayUpper[index] = remInt + 55; // To convert from int to upper hex character (int + 65('A') - 10)
+            hexArrayLower[index] = remInt + 87; // To convert from int to lower hex character (int + 97('a') - 10)
         }         
         index++;
     }while (BigInt_compare_int(decimalNumberClone, 0) != 0);
